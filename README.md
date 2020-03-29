@@ -1,2 +1,6 @@
 # hachikuji
-Hachikuji Mayoi randomly walking in hamilton cycles
+This project is an implementation of an algorithm to find hamimltonian cycles in directed graphs, given by A M Frieze in 1986.
+
+#References
+ * [A. M. Frieze, An algorithm for finding hamilton cycles in random directed graphs(1986)](https://doi.org/10.1016/0196-6774(88)90037-5)
+ * [ifsmirnov/jngen](https://github.com/ifsmirnov/jngen)
