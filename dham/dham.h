@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-
 #define rep(i, a, b) for(int i = a; i < (b); ++i)
 #define trav(a, x) for(auto& a : x)
 #define sz(x) (int)(x).size()
@@ -49,8 +48,8 @@ struct Dinic {
     }
 };
 
-int phase1(vector< array<int, 2> > E, vector< vector<int> > G, int ms) {
-    int n = G.size(), m = E.size();
+int phase1(vector< array<int, 2> > E, int n, int ms) {
+    int m = E.size();
     
     // random permutation and it's inverse
     vector<int> sigma(n), sigmai(n);
@@ -59,7 +58,7 @@ int phase1(vector< array<int, 2> > E, vector< vector<int> > G, int ms) {
     for(int i=0; i<n; i++) sigmai[sigma[i]] = i;
 
     // Creating a edge set with avg in/out-degree 10
-    set< array<int, 2> > Ep, Em;
+    set< array<int, 2> > Ep, Em, Ecap;
     vector<int> dEp(n), dEm(n);
     for(int i=0; i<ms; i++) {
         auto e = E[i];
@@ -76,9 +75,20 @@ int phase1(vector< array<int, 2> > E, vector< vector<int> > G, int ms) {
             dEm[ecap[1]]++;
         }
     }
+    Ecap = Ep;
+    //set_union(Ep.begin(), Ep.end(), Em.begin(), Em.end(), Ecap);
 
     // Create the bipartite graph, and find maximum matching
-
-    return 0;
+    Dinic F(2*n + 2);
+    for(auto it : Ep) {
+        F.addEdge(it[0], it[1] + n, 1);
+        F.addEdge(it[1], it[0] + n, 1);
+    }
+    for(int i=0; i<n; i++) {
+        F.addEdge(2*n, i, 1);
+        F.addEdge(n + i, 2*n + 1, 1);
+    }
+    return flow = F.calc(2*n, 2*n + 1);
+    
 }
 

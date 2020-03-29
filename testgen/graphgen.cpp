@@ -16,7 +16,6 @@ int main(int argc, char **argv) {
     }
     m = (double)n * log2(n) + c;
 
-    cout << n << " " << m << "\n";
     //Generate the random digraph using jngen and check degree constraint
     bool flag = true;
     auto g = Graph();
@@ -29,7 +28,7 @@ int main(int argc, char **argv) {
             for(auto it : g.edges(i)) {
                 indegree[it]++;
             }
-            if(g.edges().size() < d) {
+            if(g.edges(i).size() < d) {
                 flag = true;
                 break;
             }
@@ -41,6 +40,17 @@ int main(int argc, char **argv) {
             }
         }
     }
+    
+    // Finding m_star. Can surely be done while checking for d validity
+    set<int> in, out;
+    int ms = 0;
+    auto E = g.edges();
+    while( in.size() < n  ||  out.size() < n) {
+        auto e = E[ms++];
+        in.insert(e.first);
+        out.insert(e.second);
+    }
+    cout << n << " " << m << " " << ms << "\n" ;
     cout << g << endl;
     
 }
