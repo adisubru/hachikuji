@@ -80,7 +80,7 @@ vector<int> phase1(vector< array<int, 2> > E, int n, int ms) {
     
     // Create the bipartite graph, and find maximum matching
     Dinic F(2*n + 2);
-    vector<int> phi(n, 2*n+3);
+    vector<int> psi(n, 2*n+3), phi(n, 2*n+1);
     for(auto it : Ep) {
         F.addEdge(it[0], it[1] + n, 1);
         F.addEdge(it[1], it[0] + n, 1);
@@ -93,11 +93,14 @@ vector<int> phase1(vector< array<int, 2> > E, int n, int ms) {
     for(int i=0; i<n; i++) {
         for(auto it : F.adj[i]) {
             if(it.flow() == 1) {
-                phi[i] = it.to - n;
+                psi[i] = it.to - n;
                 break;
             }
+            else {
+                phi[i] = psi[sigmai[i]];
+            }
         }
-        if(phi[i] == 2*n+3) {
+        if(psi[i] == 2*n+3) {
             //time to break, it's all lost, no Hamiltonian cyale
             break;
         }
@@ -105,3 +108,57 @@ vector<int> phase1(vector< array<int, 2> > E, int n, int ms) {
     return phi;
 }
 
+struct DSU {
+    vector<int> parent, size;
+    void DSU(int n) {
+        parent.resize(n);
+        size.resize(n);
+    }
+    void make_set(int x) {
+        size[x] = 1;
+        parent[x] = x;
+    }
+    int find(int x) {
+        if(parent[x] == x)
+            return x;
+        return find(parent[x]);
+    }
+    void union(int a, int b) {
+        a = find(a); b = find(b);
+    if(a != b) {
+        if(size[a] < size[b])
+            swap(a, b);
+        parent[b] = a;
+        size[a] += size[b];
+    }
+};
+
+vector<int> phase2(vector<int> phi, vector<array<int, int>> E) {
+    int n = phi.size();
+    int m2 = ceil(n*log2(n)*5/6);
+    E.resize(m2);
+    
+    DSU cycle(n);
+    vector<int> phi_i(n);
+    set<array<int, int>> Es(E.begin(), E.end());
+    for(int i=0; i<n; ++i) cycle.make_set(i);
+    for(int i=0; i<n; ++i) {
+        cycle.union(i, phi[i]);
+        phi_i[phi[i]] = i;
+    }
+    bool flag = true;
+    while(flag) {
+        flag = false;
+        for(auto it : E) {
+            int x = E[0], y = E[1], z = phi_i(E[1]), w = phi(E[0]);
+            if(cycle.find(x) != cycle.find(y) && Es.find({z, w}) != Es.end() ) {
+                cycle.union(x, y);
+                phi[x] = y; phi_i[y] = x;
+                phi[z] = w; phi_i[w] = z;
+                flag = true;
+                break;
+            }
+        }
+    }
+    return phi;
+}
