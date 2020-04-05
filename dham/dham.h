@@ -48,7 +48,7 @@ struct Dinic {
     }
 };
 
-int phase1(vector< array<int, 2> > E, int n, int ms) {
+vector<int> phase1(vector< array<int, 2> > E, int n, int ms) {
     int m = E.size();
     
     // random permutation and it's inverse
@@ -76,10 +76,11 @@ int phase1(vector< array<int, 2> > E, int n, int ms) {
         }
     }
     Ecap = Ep;
-    //set_union(Ep.begin(), Ep.end(), Em.begin(), Em.end(), Ecap);
-
+    Ecap.insert(Em.begin(), Em.end());
+    
     // Create the bipartite graph, and find maximum matching
     Dinic F(2*n + 2);
+    vector<int> phi(n, 2*n+3);
     for(auto it : Ep) {
         F.addEdge(it[0], it[1] + n, 1);
         F.addEdge(it[1], it[0] + n, 1);
@@ -88,7 +89,19 @@ int phase1(vector< array<int, 2> > E, int n, int ms) {
         F.addEdge(2*n, i, 1);
         F.addEdge(n + i, 2*n + 1, 1);
     }
-    return flow = F.calc(2*n, 2*n + 1);
-    
+    F.calc(2*n, 2*n + 1);
+    for(int i=0; i<n; i++) {
+        for(auto it : F.adj[i]) {
+            if(it.flow() == 1) {
+                phi[i]=it.to;
+                break;
+            }
+        }
+        if(phi[i] == 2*n+3) {
+            //time to break, it's all lost, no Hamiltonian cyale
+            break;
+        }
+    }
+    return phi;
 }
 

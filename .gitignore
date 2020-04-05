@@ -1,3 +1,4 @@
 graphgen
 main
 *.in
+*.out

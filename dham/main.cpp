@@ -16,7 +16,9 @@ int main(void) {
         E[u].push_back(v);
         Edges.push_back({u, v});
     }
-    cout << phase1(Edges, n, 50);
-
+    vector<int> matching;
+    matching = phase1(Edges, n, ms);
+    for(int i=0; i<n; i++)
+        cout << matching[i] << endl;
 }
 
