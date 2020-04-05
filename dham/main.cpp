@@ -8,17 +8,21 @@ int main(void) {
     fast;
     int n, m, ms; //size of vertex and edge set respectively
     cin >> n >> m >> ms;
-    vector < vector<int> > E(n), Er(n); //Adjacency list of th graph
+    vector < vector<int> > E(n); //Adjacency list of th graph
     vector < array<int, 2> > Edges(n); //Edges in random order
-    for( int i=0; i<n; i++) {
+    for( int i=0; i<m; i++) {
         int u, v;
         cin >> u >> v;
         E[u].push_back(v);
         Edges.push_back({u, v});
     }
-    vector<int> matching;
-    matching = phase1(Edges, n, ms);
-    for(int i=0; i<n; i++)
-        cout << matching[i] << endl;
+    vector<int> matching = phase1(Edges, n, ms);
+    //temp = matching;
+    //still need to stress test phase1
+    sort(temp.begin(), temp.end());
+    for(int i=0; i<n; i++) {
+        cout << i << " " << matching[i] << endl;
+        //if(temp[i] != i) cout<<"\n\n";
+    }
 }
 

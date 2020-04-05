@@ -93,7 +93,7 @@ vector<int> phase1(vector< array<int, 2> > E, int n, int ms) {
     for(int i=0; i<n; i++) {
         for(auto it : F.adj[i]) {
             if(it.flow() == 1) {
-                phi[i]=it.to;
+                phi[i] = it.to - n;
                 break;
             }
         }
