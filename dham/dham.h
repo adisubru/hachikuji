@@ -1,8 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-//extern vector<set<int>> E_adj;
-//extern vector<array<int, 2> E_list;
+extern vector<set<int>> E_adj;
+extern vector<array<int, 2> E_list;
 
 #define rep(i, a, b) for(int i = a; i < (b); ++i)
 #define trav(a, x) for(auto& a : x)
@@ -51,8 +51,8 @@ struct Dinic {
     }
 };
 
-vector<int> phase1(vector< array<int, 2> > E, int n, int ms) {
-    int m = E.size();
+vector<int> phase1(int n, int ms) {
+    int m = E_list.size();
     
     // random permutation and it's inverse
     vector<int> sigma(n), sigmai(n);
@@ -64,14 +64,14 @@ vector<int> phase1(vector< array<int, 2> > E, int n, int ms) {
     set< array<int, 2> > Ep, Em, Ecap;
     vector<int> dEp(n), dEm(n);
     for(int i=0; i<ms; i++) {
-        auto e = E[i];
+        auto e = E_list[i];
         if(dEp[e[0]] < 10) {
             Ep.insert({e[0], sigma[e[1]]});
             dEp[e[0]]++;
         }
     }
     for(int i=0; i<ms; i++) {
-        auto e = E[i];
+        auto e = E_list[i];
         array<int, 2> ecap = {e[0], sigma[e[1]]};
         if( (dEm[sigma[e[1]]] < 10) && (Ep.find(ecap) != Ep.end()) ){
             Em.insert(ecap);
@@ -84,7 +84,7 @@ vector<int> phase1(vector< array<int, 2> > E, int n, int ms) {
     // Create the bipartite graph, and find maximum matching
     Dinic F(2*n + 2);
     vector<int> psi(n, 2*n+3), phi(n, 2*n+1);
-    for(auto it : Ep) {
+    for(auto it : Ecap) {
         F.addEdge(it[0], it[1] + n, 1);
         F.addEdge(it[1], it[0] + n, 1);
     }
@@ -113,7 +113,7 @@ vector<int> phase1(vector< array<int, 2> > E, int n, int ms) {
 
 struct DSU {
     vector<int> parent, size;
-    void resize(int n) {
+    void initialize(int n) {
         parent.resize(n);
         size.resize(n);
     }
@@ -137,14 +137,12 @@ struct DSU {
     }
 }cycle;
 
-vector<int> phase2(vector<int> phi, vector<array<int, int>> E) {
+vector<int> phase2(vector<int> phi) {
     int n = phi.size();
     int m2 = ceil(n*log2(n)*5/6);
-    E.resize(m2);
     
-    cycle.resize(n);
+    cycle.initialize(n);
     vector<int> phi_i(n);
-    set<array<int, int>> Es(E.begin(), E.end());
     for(int i=0; i<n; ++i) cycle.make_set(i);
     for(int i=0; i<n; ++i) {
         cycle.union(i, phi[i]);
@@ -153,8 +151,8 @@ vector<int> phase2(vector<int> phi, vector<array<int, int>> E) {
     bool flag = true;
     while(flag) {
         flag = false;
-        for(auto it : E) {
-            int x = E[0], y = E[1], z = phi_i(E[1]), w = phi(E[0]);
+        for(int i=0; i<m2; ++i) {
+            int x = E_list[i][0], y = E_list[i][1], z = phi_i(E_list[i][1]), w = phi(E_list[i][0]);
             if(cycle.find(x) != cycle.find(y) && Es.find({z, w}) != Es.end() ) {
                 cycle.union(x, y);
                 phi[x] = y; phi_i[y] = x;
