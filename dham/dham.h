@@ -137,9 +137,9 @@ struct DSU {
     }
 }cycle;
 
-vector<int> phase2(vector<int> phi) {
+void phase2(vector<int> &phi) {
     int n = phi.size();
-    int m2 = ceil(n*log2(n)*5/6);
+    int m2 = ceil(n*log2(n)*5.0/6.0);
     
     cycle.initialize(n);
     vector<int> phi_i(n);
@@ -152,7 +152,7 @@ vector<int> phase2(vector<int> phi) {
     while(flag) {
         flag = false;
         for(int i=0; i<m2; ++i) {
-            int x = E_list[i][0], y = E_list[i][1], z = phi_i(E_list[i][1]), w = phi(E_list[i][0]);
+            int x = E_list[i][0], y = E_list[i][1], z = phi_i[E_list[i][1]], w = phi[E_list[i][0]];
             if(cycle.find(x) != cycle.find(y) && Es.find({z, w}) != Es.end() ) {
                 cycle.union(x, y);
                 phi[x] = y; phi_i[y] = x;
@@ -162,18 +162,47 @@ vector<int> phase2(vector<int> phi) {
             }
         }
     }
-    return phi;
 }
 
-bool findcycle(int C1, int Ci, int i, vector<vector<int>> E, vector<int> phi) {
-    int xj = phi[i], xj1 = phi[phi[i]];
+bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
+    int xj = i, xj1 = phi[i], n = phi,size();
+    //redefine E_adj for this function. or maybe static, cuz for every call of this function
+    
+    //create set rho0
+    set<list<int>> rho;
     for(auto it : E[xj]) {
         if(cycles.find(it) == cycles.find(C1) ) {
+        	list<int> temp;
+        	for(int i=xj1; phi[i] != it; i = phi[i]) {
+        		temp.push_back(i);
+        		if( i == xj ) {
+        			temp.push_back(it);
+        			i = it;
+        		}
+        	}
+        	rho.insert(temp);
+        }
+    }
 
+
+    int T = ceil((2.0*log2(n))/(3.0*log2(log2(n))));
+    for(int t=0; t<T; ++t) {
+    	set<list<int>> rho1;
+    	for(auto it : rho) {
+    		if(E_adj[it.last()].find(it.front()) != E_adj[it.last()].end()) {
+    			//succesfully terminate and update phi
+    		}
+    		int uq = it.last();
+    		for(auto ua : E_adj[uq]) {
+    			//somehow get ua-1
+    			
+    		}
+    	}
+    }
     return true;
 }
 
-void phase3(vector<int> phi) {
+void phase3(vector<int> &phi) {
     int n = phi.size(), max=0;
     map<int, int> C;
     for(int i=0; i<n; ++i) {
@@ -184,17 +213,13 @@ void phase3(vector<int> phi) {
     C.erase(max); 
 
     for(auto it : C) {
-        vector<int> Ci{it.first, phi[it.first]};
-        int i=1;
-        while(a[0] != a[i]) {
-            Ci.push_back(phi[a[i]]);
-            ++i;
-        }
         bool outcome = false;
-        for(int i=0; i<Ci.size(); ++i) {
-            outcome = findcycle(max, it.first, i);
-            if(outcome)
+        for(int i=it.first; phi[i] != it.first; i = phi[i]) {
+            outcome = findcycle(max, it.first, i, phi);
+            if(outcome) {
+            	cycles.union(max, it.first);
                 break;
+            }
         }
         if(!outcome) {
             //terminate!! no solution
