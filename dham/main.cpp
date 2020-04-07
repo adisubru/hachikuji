@@ -4,10 +4,15 @@
 #define fast ios::sync_with_stdio(0); cin.tie(0);
 using namespace std;
 
+//vector<set<int>> E_adj;
+//vector<array<int, 2> E_list;
+
 int main(void) {
     fast;
     int n, m, ms; //size of vertex and edge set respectively
     cin >> n >> m >> ms;
+    //E_adj.resize(n);
+    //E.list.resize(m);
     vector < vector<int> > E(n); //Adjacency list of th graph
     vector < array<int, 2> > Edges(n); //Edges in random order
     for( int i=0; i<m; i++) {

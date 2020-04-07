@@ -1,6 +1,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+//extern vector<set<int>> E_adj;
+//extern vector<array<int, 2> E_list;
+
 #define rep(i, a, b) for(int i = a; i < (b); ++i)
 #define trav(a, x) for(auto& a : x)
 #define sz(x) (int)(x).size()
@@ -110,7 +113,7 @@ vector<int> phase1(vector< array<int, 2> > E, int n, int ms) {
 
 struct DSU {
     vector<int> parent, size;
-    void DSU(int n) {
+    void resize(int n) {
         parent.resize(n);
         size.resize(n);
     }
@@ -125,20 +128,21 @@ struct DSU {
     }
     void union(int a, int b) {
         a = find(a); b = find(b);
-    if(a != b) {
-        if(size[a] < size[b])
-            swap(a, b);
-        parent[b] = a;
-        size[a] += size[b];
+        if(a != b) {
+            if(size[a] < size[b])
+                swap(a, b);
+            parent[b] = a;
+            size[a] += size[b];
+        }
     }
-};
+}cycle;
 
 vector<int> phase2(vector<int> phi, vector<array<int, int>> E) {
     int n = phi.size();
     int m2 = ceil(n*log2(n)*5/6);
     E.resize(m2);
     
-    DSU cycle(n);
+    cycle.resize(n);
     vector<int> phi_i(n);
     set<array<int, int>> Es(E.begin(), E.end());
     for(int i=0; i<n; ++i) cycle.make_set(i);
@@ -161,4 +165,42 @@ vector<int> phase2(vector<int> phi, vector<array<int, int>> E) {
         }
     }
     return phi;
+}
+
+bool findcycle(int C1, int Ci, int i, vector<vector<int>> E, vector<int> phi) {
+    int xj = phi[i], xj1 = phi[phi[i]];
+    for(auto it : E[xj]) {
+        if(cycles.find(it) == cycles.find(C1) ) {
+
+    return true;
+}
+
+void phase3(vector<int> phi) {
+    int n = phi.size(), max=0;
+    map<int, int> C;
+    for(int i=0; i<n; ++i) {
+        C[cycle.find(i)]++;
+        if( C[max] > C[cycle.find(i)] )
+           max = cycle.find(i);
+    }
+    C.erase(max); 
+
+    for(auto it : C) {
+        vector<int> Ci{it.first, phi[it.first]};
+        int i=1;
+        while(a[0] != a[i]) {
+            Ci.push_back(phi[a[i]]);
+            ++i;
+        }
+        bool outcome = false;
+        for(int i=0; i<Ci.size(); ++i) {
+            outcome = findcycle(max, it.first, i);
+            if(outcome)
+                break;
+        }
+        if(!outcome) {
+            //terminate!! no solution
+            return;
+        }
+    }
 }
