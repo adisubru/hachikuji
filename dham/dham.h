@@ -3,6 +3,10 @@ using namespace std;
 
 extern vector<set<int>> E_adj;
 extern vector<array<int, 2> E_list;
+int m_star;
+
+
+/***************************      PHASE - 1      ******************************/
 
 #define rep(i, a, b) for(int i = a; i < (b); ++i)
 #define trav(a, x) for(auto& a : x)
@@ -53,6 +57,7 @@ struct Dinic {
 
 vector<int> phase1(int n, int ms) {
     int m = E_list.size();
+    m_star = ms;
     
     // random permutation and it's inverse
     vector<int> sigma(n), sigmai(n);
@@ -111,6 +116,9 @@ vector<int> phase1(int n, int ms) {
     return phi;
 }
 
+
+/***************************      PHASE - 2      ******************************/
+
 struct DSU {
     vector<int> parent, size;
     void initialize(int n) {
@@ -164,15 +172,81 @@ void phase2(vector<int> &phi) {
     }
 }
 
+
+/***************************      PHASE - 3      ******************************/
+
+struct Node {
+    Node *l = 0, *r = 0;
+    int val, y, c = 1;
+    Node(int val) : val(val), y(rand()) {}
+    void recalc();
+};
+
+int cnt(Node* n) { return n ? n->c : 0; }
+void Node::recalc() { c = cnt(l) + cnt(r) + 1; }
+
+template<class F> void each(Node* n, F f) {
+    if (n) { each(n->l, f); f(n->val); each(n->r, f); }
+}
+
+pair<Node*, Node*> split(Node* n, int k) {
+    if (!n) return {};
+    if (cnt(n->l) >= k) { // "n->val >= k" for lower_bound(k)
+        auto pa = split(n->l, k);
+        n->l = pa.second;
+        n->recalc();
+        return {pa.first, n};
+    } else {
+        auto pa = split(n->r, k - cnt(n->l) - 1); // and just "k"
+        n->r = pa.first;
+        n->recalc();
+        return {n, pa.second};
+    }
+}
+
+Node* merge(Node* l, Node* r) {
+    if (!l) return r;
+    if (!r) return l;
+    if (l->y > r->y) {
+        l->r = merge(l->r, r);
+        l->recalc();
+        return l;
+    } else {
+        r->l = merge(l, r->l);
+        r->recalc();
+        return r;
+    }
+}
+
+Node* ins(Node* t, Node* n, int pos) {
+    auto pa = split(t, pos);
+    return merge(merge(pa.first, n), pa.second);
+}
+
+int key(Node* t, int val) {
+    if (!t) return -1;
+    else if (t->val == val) return cnt(t->l);
+    else if (t->val < val) return key(t->l, val);
+    else return cnt(t->l) + 1 + key(t->r, val);
+}
+
+void move(Node*& t, int l, int r, int k) {
+    Node *a, *b, *c;
+    tie(a,b) = split(t, l); tie(b,c) = split(b, r - l);
+    if (k <= l) t = merge(ins(a, b, k), c);
+    else t = merge(a, ins(c, b, k - r));
+}
+
+
 bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
-    int xj = i, xj1 = phi[i], n = phi,size();
-    //redefine E_adj for this function. or maybe static, cuz for every call of this function
+    int xj = i, xj1 = phi[i], n = phi.size();
+    static E_adj (::E_adj.begin(), E_adj.begin()+m_star);
     
     //create set rho0
-    set<list<int>> rho;
+    vector<vector<int>> rho;
     for(auto it : E[xj]) {
         if(cycles.find(it) == cycles.find(C1) ) {
-        	list<int> temp;
+        	vector<int> temp;
         	for(int i=xj1; phi[i] != it; i = phi[i]) {
         		temp.push_back(i);
         		if( i == xj ) {
@@ -187,15 +261,18 @@ bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
 
     int T = ceil((2.0*log2(n))/(3.0*log2(log2(n))));
     for(int t=0; t<T; ++t) {
-    	set<list<int>> rho1;
+    	vector<vector<int>> rho1;
     	for(auto it : rho) {
-    		if(E_adj[it.last()].find(it.front()) != E_adj[it.last()].end()) {
+    		if(E_adj[it[it.size()-1]].find(it[0]) != E_adj[it[it.size()-1]].end()) {
     			//succesfully terminate and update phi
     		}
-    		int uq = it.last();
+    		int uq = it[it.size()-1];
     		for(auto ua : E_adj[uq]) {
-    			//somehow get ua-1
-    			
+    			for(int i=0; i<it.size() && it[i+1]!=ua; ++i);  //NNEDS to be optimized
+    			int ua1 = it[i];
+    			for(auto ub : E_adj(ua1)) {
+
+    			}
     		}
     	}
     }
