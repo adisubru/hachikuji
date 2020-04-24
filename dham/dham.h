@@ -176,29 +176,28 @@ void phase2(vector<int> &phi) {
 /***************************      PHASE - 3      ******************************/
 
 struct Node {
-    Node *l = 0, *r = 0;
+    Node *l = 0, *r = 0, *p = 0;
     int val, y, c = 1;
     Node(int val) : val(val), y(rand()) {}
     void recalc();
 };
 
 int cnt(Node* n) { return n ? n->c : 0; }
-void Node::recalc() { c = cnt(l) + cnt(r) + 1; }
-
-template<class F> void each(Node* n, F f) {
-    if (n) { each(n->l, f); f(n->val); each(n->r, f); }
-}
+void Node::recalc() { c = cnt(l) + ohcnt(r) + 1; }
+vector<Node> nodeat(n);
 
 pair<Node*, Node*> split(Node* n, int k) {
     if (!n) return {};
     if (cnt(n->l) >= k) { // "n->val >= k" for lower_bound(k)
         auto pa = split(n->l, k);
         n->l = pa.second;
+        pa.second->p = n;
         n->recalc();
         return {pa.first, n};
     } else {
         auto pa = split(n->r, k - cnt(n->l) - 1); // and just "k"
         n->r = pa.first;
+        pa.first->p = n;
         n->recalc();
         return {n, pa.second};
     }
@@ -208,10 +207,12 @@ Node* merge(Node* l, Node* r) {
     if (!l) return r;
     if (!r) return l;
     if (l->y > r->y) {
+        r->p = l;
         l->r = merge(l->r, r);
         l->recalc();
         return l;
     } else {
+        l->p = r;
         r->l = merge(l, r->l);
         r->recalc();
         return r;
@@ -223,11 +224,23 @@ Node* ins(Node* t, Node* n, int pos) {
     return merge(merge(pa.first, n), pa.second);
 }
 
-int key(Node* t, int val) {
+int key(Node* t, Node* x) {
+    int ans = cnt(x->l);
     if (!t) return -1;
-    else if (t->val == val) return cnt(t->l);
-    else if (t->val < val) return key(t->l, val);
-    else return cnt(t->l) + 1 + key(t->r, val);
+    while(x != t) {
+        auto par = x->p;
+        if (par->r == x)
+            ans += 1 + cnt(par->l);
+        x = par;
+    }
+    return ans;
+}
+
+int value(Node *n, int key) {
+    if (!n) return -1;
+    if (cnt(n->l) == key) return n->val,
+    else if (cnt(n->l) > k) return value(n->l, key);
+    else return vaue(n->r, k - cnt(n->l) - 1);
 }
 
 void move(Node*& t, int l, int r, int k) {
@@ -238,43 +251,66 @@ void move(Node*& t, int l, int r, int k) {
 }
 
 
+vector<bool> used;
+bool dfs(Node* t, int depth) {
+    static E_adj (::E_adj.begin(), E_adj.begin()+m_star);
+
+    if (depth < 1) return false;
+
+    auto x = t;
+    while(x->r) x = x->r;
+    int last = x->val, k = cnt(t);
+    bool ret = false;
+    visited[last] = true;
+
+    for(auto a : E_adj[last]) {
+        int ia = key(t, nodeat[a]);
+        if(ia == 0) continue;
+        int a1 = value(t, ia-1);
+        for(auto b : E_adj[a1]) {
+            int ib = key(t, nodeat[b]);
+            if(ib > ia) {
+                //here we finally have a valid operation
+                int b1 = value(t, ib-1);
+                if(!used[b1]) {
+                    move(t, ia, ib, k-ib+ia);
+                    if (E_adj[value(k-1)].find(value(0)) != E_adj.end()) {
+                        return true;
+                    }
+                    ret = ret || dfs(t, depth -1);
+                    if (ret) return ret;
+                    move(t, k-ib+ia, k, a);
+                }
+            }
+        }
+    }
+    return ret;
+}
+
 bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
     int xj = i, xj1 = phi[i], n = phi.size();
+    int T = ceil((2.0*log2(n))/(3.0*log2(log2(n))));
     static E_adj (::E_adj.begin(), E_adj.begin()+m_star);
+    used.resize(n);
     
-    //create set rho0
-    vector<vector<int>> rho;
-    for(auto it : E[xj]) {
+    //create each path in rho0, and explore them (depth limited)
+    for(auto it : E_adj[xj]) {
         if(cycles.find(it) == cycles.find(C1) ) {
-        	vector<int> temp;
-        	for(int i=xj1; phi[i] != it; i = phi[i]) {
-        		temp.push_back(i);
+            Node* temp = new Node(xj1);
+            used.assign(n, false);
+            int k=1;
+        	for(int i=phi[xj1]; phi[i] != it; i = phi[i]) {
+                Node* t = new Node(i);
+                nodeat[i] = temp;
+        		temp = ins(temp, t, k++);
         		if( i == xj ) {
-        			temp.push_back(it);
+                    Node* t = new Node(it);
+                    temp = ins(temp, t, k++);
         			i = it;
         		}
         	}
-        	rho.insert(temp);
+        	dfs(temp, T);
         }
-    }
-
-
-    int T = ceil((2.0*log2(n))/(3.0*log2(log2(n))));
-    for(int t=0; t<T; ++t) {
-    	vector<vector<int>> rho1;
-    	for(auto it : rho) {
-    		if(E_adj[it[it.size()-1]].find(it[0]) != E_adj[it[it.size()-1]].end()) {
-    			//succesfully terminate and update phi
-    		}
-    		int uq = it[it.size()-1];
-    		for(auto ua : E_adj[uq]) {
-    			for(int i=0; i<it.size() && it[i+1]!=ua; ++i);  //NNEDS to be optimized
-    			int ua1 = it[i];
-    			for(auto ub : E_adj(ua1)) {
-
-    			}
-    		}
-    	}
     }
     return true;
 }
