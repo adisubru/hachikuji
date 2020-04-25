@@ -20,7 +20,7 @@ int main(void) {
         E_list.push_back({u, v});
     }
     vector<int> matching = phase1(n, ms);
-    //temp = matching; checking if permutation is legit
+    //vector<int> temp = matching; //checking if permutation is legit
     
     //still need to stress test phase1
     //sort(temp.begin(), temp.end());
