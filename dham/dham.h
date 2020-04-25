@@ -2,7 +2,7 @@
 using namespace std;
 
 extern vector<set<int>> E_adj;
-extern vector<array<int, 2> E_list;
+extern vector<array<int, 2>> E_list;
 int m_star;
 
 
@@ -134,7 +134,7 @@ struct DSU {
             return x;
         return find(parent[x]);
     }
-    void union(int a, int b) {
+    void unoin(int a, int b) {
         a = find(a); b = find(b);
         if(a != b) {
             if(size[a] < size[b])
@@ -153,7 +153,7 @@ void phase2(vector<int> &phi) {
     vector<int> phi_i(n);
     for(int i=0; i<n; ++i) cycle.make_set(i);
     for(int i=0; i<n; ++i) {
-        cycle.union(i, phi[i]);
+        cycle.unoin(i, phi[i]);
         phi_i[phi[i]] = i;
     }
     bool flag = true;
@@ -161,8 +161,8 @@ void phase2(vector<int> &phi) {
         flag = false;
         for(int i=0; i<m2; ++i) {
             int x = E_list[i][0], y = E_list[i][1], z = phi_i[E_list[i][1]], w = phi[E_list[i][0]];
-            if(cycle.find(x) != cycle.find(y) && Es.find({z, w}) != Es.end() ) {
-                cycle.union(x, y);
+            if(cycle.find(x) != cycle.find(y) && E_adj[z].find(w) != E_adj[z].end() ) {
+                cycle.unoin(x, y);
                 phi[x] = y; phi_i[y] = x;
                 phi[z] = w; phi_i[w] = z;
                 flag = true;
@@ -183,8 +183,8 @@ struct Node {
 };
 
 int cnt(Node* n) { return n ? n->c : 0; }
-void Node::recalc() { c = cnt(l) + ohcnt(r) + 1; }
-vector<Node> nodeat(n);
+void Node::recalc() { c = cnt(l) + cnt(r) + 1; }
+vector<Node*> nodeat;
 
 pair<Node*, Node*> split(Node* n, int k) {
     if (!n) return {};
@@ -238,9 +238,9 @@ int key(Node* t, Node* x) {
 
 int value(Node *n, int key) {
     if (!n) return -1;
-    if (cnt(n->l) == key) return n->val,
-    else if (cnt(n->l) > k) return value(n->l, key);
-    else return vaue(n->r, k - cnt(n->l) - 1);
+    if (cnt(n->l) == key) return n->val;
+    else if (cnt(n->l) > key) return value(n->l, key);
+    else return value(n->r, key - cnt(n->l) - 1);
 }
 
 void move(Node*& t, int l, int r, int k) {
@@ -253,7 +253,7 @@ void move(Node*& t, int l, int r, int k) {
 
 vector<bool> used;
 bool dfs(Node* t, int depth) {
-    static E_adj (::E_adj.begin(), E_adj.begin()+m_star);
+    static vector<set<int>> E_adj (::E_adj.begin(), E_adj.begin()+m_star);
 
     if (depth < 1) return false;
 
@@ -261,7 +261,7 @@ bool dfs(Node* t, int depth) {
     while(x->r) x = x->r;
     int last = x->val, k = cnt(t);
     bool ret = false;
-    visited[last] = true;
+    used[last] = true;
 
     for(auto a : E_adj[last]) {
         int ia = key(t, nodeat[a]);
@@ -274,7 +274,7 @@ bool dfs(Node* t, int depth) {
                 int b1 = value(t, ib-1);
                 if(!used[b1]) {
                     move(t, ia, ib, k-ib+ia);
-                    if (E_adj[value(k-1)].find(value(0)) != E_adj.end()) {
+                    if (E_adj[value(t, k-1)].find(value(t, 0)) != E_adj[value(t, k-1)].end()) {
                         return true;
                     }
                     ret = ret || dfs(t, depth -1);
@@ -290,21 +290,24 @@ bool dfs(Node* t, int depth) {
 bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
     int xj = i, xj1 = phi[i], n = phi.size();
     int T = ceil((2.0*log2(n))/(3.0*log2(log2(n))));
-    static E_adj (::E_adj.begin(), E_adj.begin()+m_star);
+    static vector<set<int>> E_adj (::E_adj.begin(), E_adj.begin()+m_star);
     used.resize(n);
+    nodeat.resize(n);
     
     //create each path in rho0, and explore them (depth limited)
     for(auto it : E_adj[xj]) {
-        if(cycles.find(it) == cycles.find(C1) ) {
+        if(cycle.find(it) == cycle.find(C1) ) {
             Node* temp = new Node(xj1);
+            nodeat[xj1] = temp;
             used.assign(n, false);
             int k=1;
         	for(int i=phi[xj1]; phi[i] != it; i = phi[i]) {
                 Node* t = new Node(i);
-                nodeat[i] = temp;
+                nodeat[i] = t;
         		temp = ins(temp, t, k++);
         		if( i == xj ) {
                     Node* t = new Node(it);
+                    nodeat[it] = t;
                     temp = ins(temp, t, k++);
         			i = it;
         		}
@@ -330,7 +333,7 @@ void phase3(vector<int> &phi) {
         for(int i=it.first; phi[i] != it.first; i = phi[i]) {
             outcome = findcycle(max, it.first, i, phi);
             if(outcome) {
-            	cycles.union(max, it.first);
+            	cycle.unoin(max, it.first);
                 break;
             }
         }
