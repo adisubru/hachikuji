@@ -1,4 +1,4 @@
-# hachikuji
+# hachishiji
 
 ## About
 This project implements a randomized algorithm to find hamimltonian cycles in digraphs.
