@@ -88,7 +88,7 @@ vector<int> phase1(int n, int ms) {
     
     // Create the bipartite graph, and find maximum matching
     Dinic F(2*n + 2);
-    vector<int> psi(n, 2*n+3), phi(n, 2*n+1);
+    vector<int> psi(n, 2*n+1), phi(n, 2*n+1);
     for(auto it : Ecap) {
         F.addEdge(it[0], it[1] + n, 1);
         F.addEdge(it[1], it[0] + n, 1);
@@ -99,17 +99,19 @@ vector<int> phase1(int n, int ms) {
     }
     F.calc(2*n, 2*n + 1);
     for(int i=0; i<n; i++) {
+        //cerr << i << " : ";
+        //for(auto it : F.adj[i]) fprintf(stderr, "(%d, %d), ", it.to, it.flow()); cerr << endl;
         for(auto it : F.adj[i]) {
             if(it.flow() == 1) {
                 psi[i] = it.to - n;
                 break;
             }
-            else {
-                phi[i] = psi[sigmai[i]];
-            }
         }
-        if(psi[i] == 2*n+3) {
+        //phi[i] = psi[sigmai[i]];
+        phi[i] = sigmai[psi[i]];
+        if(phi[i] == 2*n+1) {
             //time to break, it's all lost, no Hamiltonian cyale
+            cerr << "At i = " << i << " phi[i] = " << phi[i] << endl;
             break;
         }
     }

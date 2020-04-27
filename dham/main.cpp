@@ -12,21 +12,21 @@ int main(void) {
     int n, m, ms; //size of vertex and edge set respectively
     cin >> n >> m >> ms;
     E_adj.resize(n);
-    E_list.resize(m);
+    //E_list.resize(m);
     for( int i=0; i<m; i++) {
         int u, v;
-        cin >> u >> v;
+        cin >> u >> v; 
         E_adj[u].insert(v);
         E_list.push_back({u, v});
     }
     vector<int> matching = phase1(n, ms);
-    //vector<int> temp = matching; //checking if permutation is legit
+    vector<int> temp = matching; //checking if permutation is legit
     
     //still need to stress test phase1
-    //sort(temp.begin(), temp.end());
+    sort(temp.begin(), temp.end());
     for(int i=0; i<n; i++) {
         cout << i << " " << matching[i] << endl;
-        //if(temp[i] != i) cout<<"\n\n";
+        if(temp[i] != i) cout<<"\n\n";
     }
 }
 
