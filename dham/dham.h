@@ -158,6 +158,11 @@ void phase2(vector<int> &phi) {
         cycle.unoin(i, phi[i]);
         phi_i[phi[i]] = i;
     }
+
+    set<int> cnt;
+    for(int i=0; i<n; i++) cnt.insert(cycle.find(i));
+    cerr << cnt.size() << endl;
+
     bool flag = true;
     while(flag) {
         flag = false;
@@ -172,6 +177,10 @@ void phase2(vector<int> &phi) {
             }
         }
     }
+
+    cnt.clear();
+    for(int i=0; i<n; i++) cnt.insert(cycle.find(i));
+    cerr << cnt.size() <<endl;
 }
 
 
