@@ -4,20 +4,21 @@
 #define fast ios::sync_with_stdio(0); cin.tie(0);
 using namespace std;
 
-vector<set<int>> E_adj;
+vector<set<int>> E_adj, E_ms;
 vector<array<int, 2>> E_list;
 
 int main(void) {
     fast;
     int n, m, ms; //size of vertex and edge set respectively
     cin >> n >> m >> ms;
-    E_adj.resize(n);
+    E_adj.resize(n); E_ms.resize(n);
     //E_list.resize(m);
     for( int i=0; i<m; i++) {
         int u, v;
         cin >> u >> v; 
         E_adj[u].insert(v);
         E_list.push_back({u, v});
+        if (i <= ms) E_ms[u].insert(v);
     }
     vector<int> matching = phase1(n, ms);
     phase2(matching);

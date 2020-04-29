@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-extern vector<set<int>> E_adj;
+extern vector<set<int>> E_adj, E_ms;
 extern vector<array<int, 2>> E_list;
 int m_star;
 
@@ -56,7 +56,6 @@ struct Dinic {
 };
 
 vector<int> phase1(int n, int ms) {
-    int m = E_list.size();
     m_star = ms;
     
     // random permutation and it's inverse
@@ -202,13 +201,15 @@ pair<Node*, Node*> split(Node* n, int k) {
     if (cnt(n->l) >= k) { // "n->val >= k" for lower_bound(k)
         auto pa = split(n->l, k);
         n->l = pa.second;
-        pa.second->p = n;
+        if (pa.second) pa.second->p = n;
+        if (pa.first) pa.first->p = pa.first;
         n->recalc();
         return {pa.first, n};
     } else {
         auto pa = split(n->r, k - cnt(n->l) - 1); // and just "k"
         n->r = pa.first;
-        pa.first->p = n;
+        if (pa.first) pa.first->p = n;
+        if (pa.second) pa.second->p = pa.second;
         n->recalc();
         return {n, pa.second};
     }
@@ -218,13 +219,13 @@ Node* merge(Node* l, Node* r) {
     if (!l) return r;
     if (!r) return l;
     if (l->y > r->y) {
-        r->p = l;
         l->r = merge(l->r, r);
+        l->r->p = l;
         l->recalc();
         return l;
     } else {
-        l->p = r;
         r->l = merge(l, r->l);
+        r->l->p = r;
         r->recalc();
         return r;
     }
@@ -236,8 +237,9 @@ Node* ins(Node* t, Node* n, int pos) {
 }
 
 int key(Node* t, Node* x) {
-    int ans = cnt(x->l);
-    if (!t) return -1;
+    if (t==nullptr || x==nullptr) return -1;
+    int ans = 0;
+    if (x->l) ans = cnt(x->l);
     while(x != t) {
         auto par = x->p;
         if (par->r == x)
@@ -264,7 +266,6 @@ void move(Node*& t, int l, int r, int k) {
 
 vector<bool> used;
 bool dfs(Node* t, int depth) {
-    static vector<set<int>> E_adj (::E_adj.begin(), E_adj.begin()+m_star);
 
     if (depth < 1) return false;
 
@@ -274,18 +275,20 @@ bool dfs(Node* t, int depth) {
     bool ret = false;
     used[last] = true;
 
-    for(auto a : E_adj[last]) {
+    for(auto a : E_ms[last]) {
+        if (!nodeat[a]) continue;
         int ia = key(t, nodeat[a]);
         if(ia == 0) continue;
         int a1 = value(t, ia-1);
-        for(auto b : E_adj[a1]) {
+        for(auto b : E_ms[a1]) {
+            if (!nodeat[b]) continue;
             int ib = key(t, nodeat[b]);
             if(ib > ia) {
                 //here we finally have a valid operation
                 int b1 = value(t, ib-1);
                 if(!used[b1]) {
                     move(t, ia, ib, k-ib+ia);
-                    if (E_adj[value(t, k-1)].find(value(t, 0)) != E_adj[value(t, k-1)].end()) {
+                    if (E_ms[value(t, k-1)].find(value(t, 0)) != E_ms[value(t, k-1)].end()) {
                         return true;
                     }
                     ret = ret || dfs(t, depth -1);
@@ -301,29 +304,47 @@ bool dfs(Node* t, int depth) {
 bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
     int xj = i, xj1 = phi[i], n = phi.size();
     int T = ceil((2.0*log2(n))/(3.0*log2(log2(n))));
-    static vector<set<int>> E_adj (::E_adj.begin(), E_adj.begin()+m_star);
-    used.resize(n);
-    nodeat.resize(n);
     
     //create each path in rho0, and explore them (depth limited)
-    for(auto it : E_adj[xj]) {
+    for(auto it : E_ms[xj]) {
         if(cycle.find(it) == cycle.find(C1) ) {
-            Node* temp = new Node(xj1);
-            nodeat[xj1] = temp;
+            // Clear the nodes and used array
+            /*for(int i=0; i<n; ++i) {
+                nodeat[i]->l = nodeat[i]->r = nodeat[i]->p = 0;
+                nodeat[i]->p = nodeat[i];
+                nodeat[i]->c = 1;
+                used[i] = false;
+            }*/
+            
             used.assign(n, false);
+            nodeat.assign(n, nullptr);
+            // create the path
             int k=1;
+            nodeat[xj1] = new Node(xj1);
+            Node *root = nodeat[xj1];
         	for(int i=phi[xj1]; phi[i] != it; i = phi[i]) {
-                Node* t = new Node(i);
-                nodeat[i] = t;
-        		temp = ins(temp, t, k++);
+                nodeat[i] = new Node(i);
+                root = ins(root, nodeat[i], k++);
+                cerr << i << " ";
         		if( i == xj ) {
-                    Node* t = new Node(it);
-                    nodeat[it] = t;
-                    temp = ins(temp, t, k++);
-        			i = it;
+                    cerr << it << " ";
+                    nodeat[it] = new Node(it);
+                    root = ins(root, nodeat[it], k++);
+                    i = it;
         		}
         	}
-        	dfs(temp, T);
+            cerr << endl;
+            for(int i=0; i<cnt(root); ++i) {
+                int x = value(root, i);
+                cerr << x << " ";
+                int y = key(root, nodeat[x]);
+                if (y != i) cerr << "\n\n";
+                //fprintf(stderr, "(%d, %d), ", x, y);
+            } cerr << endl;
+
+
+            // Do dfs
+        	dfs(root, T);
         }
     }
     return true;
@@ -331,11 +352,15 @@ bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
 
 void phase3(vector<int> &phi) {
     int n = phi.size(), max=0;
+    used.resize(n);
+    nodeat.resize(n);
+
     map<int, int> C;
     for(int i=0; i<n; ++i) {
         C[cycle.find(i)]++;
-        if( C[max] > C[cycle.find(i)] )
+        if( C[max] < C[cycle.find(i)] )
            max = cycle.find(i);
+        nodeat[i] = new Node(i);
     }
     C.erase(max); 
 
@@ -350,6 +375,7 @@ void phase3(vector<int> &phi) {
         }
         if(!outcome) {
             //terminate!! no solution
+            cerr << "p3 : No Solution\n";
             return;
         }
     }
