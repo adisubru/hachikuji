@@ -98,18 +98,16 @@ vector<int> phase1(int n, int ms) {
     }
     F.calc(2*n, 2*n + 1);
     for(int i=0; i<n; i++) {
-        //cerr << i << " : ";
-        //for(auto it : F.adj[i]) fprintf(stderr, "(%d, %d), ", it.to, it.flow()); cerr << endl;
         for(auto it : F.adj[i]) {
             if(it.flow() == 1) {
                 psi[i] = it.to - n;
                 break;
             }
         }
-        //phi[i] = psi[sigmai[i]];
         phi[i] = sigmai[psi[i]];
         if(phi[i] == 2*n+1) {
             //time to break, it's all lost, no Hamiltonian cyale
+            cerr << "p1 : No Solution\n";
             cerr << "At i = " << i << " phi[i] = " << phi[i] << endl;
             break;
         }
@@ -158,10 +156,6 @@ void phase2(vector<int> &phi) {
         phi_i[phi[i]] = i;
     }
 
-    set<int> cnt;
-    for(int i=0; i<n; i++) cnt.insert(cycle.find(i));
-    cerr << cnt.size() << endl;
-
     bool flag = true;
     while(flag) {
         flag = false;
@@ -176,10 +170,6 @@ void phase2(vector<int> &phi) {
             }
         }
     }
-
-    cnt.clear();
-    for(int i=0; i<n; i++) cnt.insert(cycle.find(i));
-    cerr << cnt.size() <<endl;
 }
 
 
@@ -265,7 +255,7 @@ void move(Node*& t, int l, int r, int k) {
 
 
 vector<bool> used;
-bool dfs(Node* t, int depth) {
+bool dfs(Node* t, int depth, vector<int> &phi) {
 
     if (depth < 1) return false;
 
@@ -289,9 +279,12 @@ bool dfs(Node* t, int depth) {
                 if(!used[b1]) {
                     move(t, ia, ib, k-ib+ia);
                     if (E_ms[value(t, k-1)].find(value(t, 0)) != E_ms[value(t, k-1)].end()) {
+                        for(int i=0; i<k; ++i) {
+                            phi[value(t, i)] = value(t, (i+1)%k);
+                        }
                         return true;
                     }
-                    ret = ret || dfs(t, depth -1);
+                    ret = ret || dfs(t, depth -1, phi);
                     if (ret) return ret;
                     move(t, k-ib+ia, k, a);
                 }
@@ -308,16 +301,9 @@ bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
     //create each path in rho0, and explore them (depth limited)
     for(auto it : E_ms[xj]) {
         if(cycle.find(it) == cycle.find(C1) ) {
-            // Clear the nodes and used array
-            /*for(int i=0; i<n; ++i) {
-                nodeat[i]->l = nodeat[i]->r = nodeat[i]->p = 0;
-                nodeat[i]->p = nodeat[i];
-                nodeat[i]->c = 1;
-                used[i] = false;
-            }*/
-            
             used.assign(n, false);
             nodeat.assign(n, nullptr);
+
             // create the path
             int k=1;
             nodeat[xj1] = new Node(xj1);
@@ -325,29 +311,19 @@ bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
         	for(int i=phi[xj1]; phi[i] != it; i = phi[i]) {
                 nodeat[i] = new Node(i);
                 root = ins(root, nodeat[i], k++);
-                cerr << i << " ";
         		if( i == xj ) {
-                    cerr << it << " ";
                     nodeat[it] = new Node(it);
                     root = ins(root, nodeat[it], k++);
                     i = it;
         		}
         	}
-            cerr << endl;
-            for(int i=0; i<cnt(root); ++i) {
-                int x = value(root, i);
-                cerr << x << " ";
-                int y = key(root, nodeat[x]);
-                if (y != i) cerr << "\n\n";
-                //fprintf(stderr, "(%d, %d), ", x, y);
-            } cerr << endl;
-
 
             // Do dfs
-        	dfs(root, T);
+        	if (dfs(root, T, phi))
+                return true;
         }
     }
-    return true;
+    return false;
 }
 
 void phase3(vector<int> &phi) {
@@ -380,3 +356,4 @@ void phase3(vector<int> &phi) {
         }
     }
 }
+

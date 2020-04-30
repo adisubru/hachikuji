@@ -7,6 +7,22 @@ using namespace std;
 vector<set<int>> E_adj, E_ms;
 vector<array<int, 2>> E_list;
 
+int numcycles(vector<int> &p) {
+    vector<int> used(size(p));
+    int ans = 0;
+    for(int it=0; it<size(p); ++it) {
+        if (used[it])
+            continue;
+        ans++;
+        int i = it;
+        while(!used[i]) {
+            used[i] = 1;
+            i = p[i];
+        }
+    }
+    return ans;
+}
+
 int main(void) {
     fast;
     int n, m, ms; //size of vertex and edge set respectively
@@ -21,11 +37,14 @@ int main(void) {
         if (i <= ms) E_ms[u].insert(v);
     }
     vector<int> matching = phase1(n, ms);
+    cerr << "p1 num cycles = " << numcycles(matching) << endl;
     phase2(matching);
+    cerr << "p2 num cycles = " << numcycles(matching) << endl;
     phase3(matching);
-    vector<int> temp = matching; //checking if permutation is legit
+    cerr << "p3 num cycles = " << numcycles(matching) << endl;
     
-    //still need to stress test phase1
+    
+    vector<int> temp = matching; //checking if permutation is legit
     sort(temp.begin(), temp.end());
     for(int i=0; i<n; i++) {
         cout << i << " " << matching[i] << endl;
