@@ -18,6 +18,11 @@ int main(void) {
     }
     for(int i=0; i<n; i++) cout << value(root, i) << " "; cout << endl;
     inorder(root); cout << endl;
-
+    int l=0, r=1, k=0;
+    while (l != r) {
+        cin >> l >> r >> k;
+        move(root, l, r, k);
+        inorder(root); cout << endl;
+    }
 }
 

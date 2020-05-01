@@ -288,8 +288,8 @@ bool dfs(Node* t, int depth, vector<int> &phi) {
                 //here we finally have a valid operation
                 int b1 = value(t, ib-1);
                 if(!used[b1]) {
-                    move(t, ia, ib, k-ib+ia);
-                    cerr << "Down: "; inorder(t); cerr << endl;
+                    move(t, ia, ib, k);
+                    //cerr << "Down: "; inorder(t); cerr << endl;
                     if (E_ms[value(t, k-1)].find(value(t, 0)) != E_ms[value(t, k-1)].end()) {
                         for(int i=0; i<k; ++i) {
                             phi[value(t, i)] = value(t, (i+1)%k);
@@ -299,7 +299,7 @@ bool dfs(Node* t, int depth, vector<int> &phi) {
                     ret = ret || dfs(t, depth -1, phi);
                     if (ret) return ret;
                     move(t, k-ib+ia, k, a);
-                    cerr << "Up  : "; inorder(t); cerr << endl;
+                    //cerr << "Up  : "; inorder(t); cerr << endl;
                 }
             }
         }
@@ -333,7 +333,7 @@ bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
             nodeat[i] = new Node(i);
             root = ins(root, nodeat[i], k++);
             
-            cerr << "dfs : "; inorder(root); cerr << endl;
+            //cerr << "dfs : "; inorder(root); cerr << endl;
             // Do dfs
             bool d = dfs(root, T, phi);
         	if (d) {
@@ -360,15 +360,15 @@ void phase3(vector<int> &phi) {
     for(auto it = C.begin(); it != C.end(); ++it) {
         if (it->second < 1) continue;
         bool outcome = false;
-        cerr << "Cycle 1 : "; pcycle(phi, max);
-        cerr << "Cycle 2 : "; pcycle(phi, it->first);
+        //cerr << "Cycle 1 : "; pcycle(phi, max);
+        //cerr << "Cycle 2 : "; pcycle(phi, it->first);
         //for(int i=it->first; phi[i] != it->first; i = phi[i]) 
         int i = it->first;
         do{
             outcome = findcycle(max, it->first, i, phi);
             if(outcome) {
             	cycle.unoin(max, it->first);
-                cerr << "Cycle n : "; pcycle(phi, max); cerr << endl;
+                //cerr << "Cycle n : "; pcycle(phi, max); cerr << endl;
                 break;
             }
             cerr << endl;
