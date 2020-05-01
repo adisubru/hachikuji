@@ -109,7 +109,15 @@ vector<int> phase1(int n, int ms) {
             //time to break, it's all lost, no Hamiltonian cyale
             cerr << "p1 : No Solution\n";
             cerr << "At i = " << i << " phi[i] = " << phi[i] << endl;
-            break;
+            return {};
+        }
+    }
+    vector<int> check = phi; 
+    sort(check.begin(), check.end());
+    for(int i=0; i<n; ++i) {
+        if (check[i] != i) {
+            cerr << "p1 : No solution\nNot a permutation\n";
+            return {};
         }
     }
     return phi;
@@ -232,8 +240,9 @@ int key(Node* t, Node* x) {
     if (x->l) ans = cnt(x->l);
     while(x != t) {
         auto par = x->p;
-        if (par->r == x)
-            ans += 1 + cnt(par->l);
+        if (!par->r)
+            if (par->r == x)
+                ans += 1 + cnt(par->l);
         x = par;
     }
     return ans;
@@ -253,6 +262,8 @@ void move(Node*& t, int l, int r, int k) {
     else t = merge(a, ins(c, b, k - r));
 }
 
+void inorder(Node*);
+void pcycle(vector<int>, int);
 
 vector<bool> used;
 bool dfs(Node* t, int depth, vector<int> &phi) {
@@ -278,6 +289,7 @@ bool dfs(Node* t, int depth, vector<int> &phi) {
                 int b1 = value(t, ib-1);
                 if(!used[b1]) {
                     move(t, ia, ib, k-ib+ia);
+                    cerr << "Down: "; inorder(t); cerr << endl;
                     if (E_ms[value(t, k-1)].find(value(t, 0)) != E_ms[value(t, k-1)].end()) {
                         for(int i=0; i<k; ++i) {
                             phi[value(t, i)] = value(t, (i+1)%k);
@@ -287,6 +299,7 @@ bool dfs(Node* t, int depth, vector<int> &phi) {
                     ret = ret || dfs(t, depth -1, phi);
                     if (ret) return ret;
                     move(t, k-ib+ia, k, a);
+                    cerr << "Up  : "; inorder(t); cerr << endl;
                 }
             }
         }
@@ -305,10 +318,10 @@ bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
             nodeat.assign(n, nullptr);
 
             // create the path
-            int k=1;
+            int k=1, i;
             nodeat[xj1] = new Node(xj1);
             Node *root = nodeat[xj1];
-        	for(int i=phi[xj1]; phi[i] != it; i = phi[i]) {
+        	for(i=phi[xj1]; phi[i] != it; i = phi[i]) {
                 nodeat[i] = new Node(i);
                 root = ins(root, nodeat[i], k++);
         		if( i == xj ) {
@@ -317,10 +330,15 @@ bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
                     i = it;
         		}
         	}
-
+            nodeat[i] = new Node(i);
+            root = ins(root, nodeat[i], k++);
+            
+            cerr << "dfs : "; inorder(root); cerr << endl;
             // Do dfs
-        	if (dfs(root, T, phi))
+            bool d = dfs(root, T, phi);
+        	if (d) {
                 return true;
+            }
         }
     }
     return false;
@@ -336,19 +354,26 @@ void phase3(vector<int> &phi) {
         C[cycle.find(i)]++;
         if( C[max] < C[cycle.find(i)] )
            max = cycle.find(i);
-        nodeat[i] = new Node(i);
     }
     C.erase(max); 
 
-    for(auto it : C) {
+    for(auto it = C.begin(); it != C.end(); ++it) {
+        if (it->second < 1) continue;
         bool outcome = false;
-        for(int i=it.first; phi[i] != it.first; i = phi[i]) {
-            outcome = findcycle(max, it.first, i, phi);
+        cerr << "Cycle 1 : "; pcycle(phi, max);
+        cerr << "Cycle 2 : "; pcycle(phi, it->first);
+        //for(int i=it->first; phi[i] != it->first; i = phi[i]) 
+        int i = it->first;
+        do{
+            outcome = findcycle(max, it->first, i, phi);
             if(outcome) {
-            	cycle.unoin(max, it.first);
+            	cycle.unoin(max, it->first);
+                cerr << "Cycle n : "; pcycle(phi, max); cerr << endl;
                 break;
             }
-        }
+            cerr << endl;
+            i = phi[i];
+        }while(i != it->first);
         if(!outcome) {
             //terminate!! no solution
             cerr << "p3 : No Solution\n";
@@ -357,3 +382,18 @@ void phase3(vector<int> &phi) {
     }
 }
 
+void inorder(Node *t) {
+    if (!t) return;
+    inorder(t->l);
+    cerr << t->val << " ";
+    inorder(t->r);
+}
+
+void pcycle(vector<int> p, int s) {
+    int i = s;
+    while(p[i] != s) {
+        cerr << i << " ";
+        i = p[i];
+    }
+    cerr << i << endl;
+}

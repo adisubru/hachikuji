@@ -37,10 +37,13 @@ int main(void) {
         if (i <= ms) E_ms[u].insert(v);
     }
     vector<int> matching = phase1(n, ms);
-    cerr << "p1 num cycles = " << numcycles(matching) << endl;
-    phase2(matching);
+    int cyc = numcycles(matching);
+    cerr << "p1 num cycles = " << cyc << endl;
+    if (cyc > 1) phase2(matching);
+    cyc = numcycles(matching);
     cerr << "p2 num cycles = " << numcycles(matching) << endl;
-    phase3(matching);
+    if (cyc > 1) phase3(matching);
+    cyc = numcycles(matching);
     cerr << "p3 num cycles = " << numcycles(matching) << endl;
     
     
