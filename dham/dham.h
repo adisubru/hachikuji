@@ -57,11 +57,11 @@ struct Dinic {
 
 vector<int> phase1(int n, int ms) {
     m_star = ms;
-    
+    mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
     // random permutation and it's inverse
     vector<int> sigma(n), sigmai(n);
     for(int i=0; i<n; i++) sigma[i]=i;
-    random_shuffle(sigma.begin(), sigma.end());
+    shuffle(sigma.begin(), sigma.end(), rng);
     for(int i=0; i<n; i++) sigmai[sigma[i]] = i;
 
     // Creating a edge set with avg in/out-degree 10
@@ -84,13 +84,17 @@ vector<int> phase1(int n, int ms) {
     }
     Ecap = Ep;
     Ecap.insert(Em.begin(), Em.end());
-    
+ 
+    /*for(auto it : Ecap) {
+        fprintf(stderr, "(%d, %d) : %d\n", it[0], sigmai[it[1]], E_adj[it[0]].find(sigmai[it[1]]) != E_adj[it[0]].end() );
+    }*/   
+
     // Create the bipartite graph, and find maximum matching
     Dinic F(2*n + 2);
     vector<int> psi(n, 2*n+1), phi(n, 2*n+1);
     for(auto it : Ecap) {
         F.addEdge(it[0], it[1] + n, 1);
-        F.addEdge(it[1], it[0] + n, 1);
+        //F.addEdge(it[1], it[0] + n, 1);
     }
     for(int i=0; i<n; i++) {
         F.addEdge(2*n, i, 1);
@@ -101,10 +105,11 @@ vector<int> phase1(int n, int ms) {
         for(auto it : F.adj[i]) {
             if(it.flow() == 1) {
                 psi[i] = it.to - n;
+                phi[i] = sigmai[it.to - n];
                 break;
             }
         }
-        phi[i] = sigmai[psi[i]];
+        //phi[i] = sigmai[psi[i]];
         if(phi[i] == 2*n+1) {
             //time to break, it's all lost, no Hamiltonian cyale
             cerr << "p1 : No Solution\n";
