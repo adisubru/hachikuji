@@ -7,6 +7,14 @@ using namespace std;
 vector<set<int>> E_adj, E_ms;
 vector<array<int, 2>> E_list;
 
+void inorder(Node *root, Node *t) {
+    if (!t) return;
+    inorder(root, t->l);
+    fprintf(stdout, "(%d : %d), ", key(root, t), t->val);
+    //cerr << t->val << " ";
+    inorder(root, t->r);
+}
+
 int main(void) {
     int n; cin >> n;
     vector<int> a(n); cin >> a[0];
@@ -17,12 +25,12 @@ int main(void) {
         root = ins(root, x, i);
     }
     for(int i=0; i<n; i++) cout << value(root, i) << " "; cout << endl;
-    inorder(root); cout << endl;
+    inorder(root, root); cout << endl;
     int l=0, r=1, k=0;
     while (l != r) {
         cin >> l >> r >> k;
         move(root, l, r, k);
-        inorder(root); cout << endl;
+        inorder(root, root); cout << endl;
     }
 }
 
