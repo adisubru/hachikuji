@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
     if(argc > 3) {
         d = atoi( argv[3] );
     }
-    m = (double)n * log2(n) + c;
+    m = (double)n * log2(n) + c*n;
 
     //Generate the random digraph using jngen and check degree constraint
     bool flag = true;

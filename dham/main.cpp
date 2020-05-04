@@ -71,7 +71,7 @@ int main(void) {
         fprintf(stdout, "%d %ld %d %d\n", 1, time.count(), ms, m);
     }
     else {
-        cout << "0/n";
+        cout << "0\n";
     }
     /*for(int i=0; i<n; i++) {
         cout << i << " " << matching[i] << endl;
