@@ -121,7 +121,7 @@ vector<int> phase1(int n, int ms) {
     sort(check.begin(), check.end());
     for(int i=0; i<n; ++i) {
         if (check[i] != i) {
-            cerr << "p1 : No solution\nNot a permutation\n";
+            cerr << "p1 : No solution, Not a permutation\n";
             return {};
         }
     }
@@ -289,18 +289,18 @@ bool dfs(Node* t, int depth, vector<int> &phi) {
             int ib = key(t, nodeat[b]);
             if(ib > ia) {
                 //here we finally have a valid operation
-                fprintf(stderr, " %d, %d, %d, %d\n", key(t, nodeat[last]), key(t, nodeat[a]), key(t, nodeat[a1]), key(t, nodeat[b]));
-                fprintf(stderr, "edges found : (%d, %d), (%d, %d)\n", last, a, a1, b);
+                //fprintf(stderr, " %d, %d, %d, %d\n", key(t, nodeat[last]), key(t, nodeat[a]), key(t, nodeat[a1]), key(t, nodeat[b]));
+                //fprintf(stderr, "edges found : (%d, %d), (%d, %d)\n", last, a, a1, b);
                 int b1 = value(t, ib-1);
                 if(!used[b1]) {
                     move(t, ia, ib, k);
-                    cerr << "Down: "; inorder(t); cerr << endl ;
+                    /*cerr << "Down: "; inorder(t); cerr << endl ;
                     for (int i=0; i<k; ++i) {
                         int a = value(t, i), b = value(t, (i+1)%k);
                         if(E_adj[a].find(b) == E_adj[a].end()) {
                             fprintf(stderr, "(%d, %d), ", a, b);
                         }
-                    }cerr << endl;
+                    }cerr << endl;*/
                     if (E_ms[value(t, k-1)].find(value(t, 0)) != E_ms[value(t, k-1)].end()) {
                         for(int i=0; i<k; ++i) {
                             phi[value(t, i)] = value(t, (i+1)%k);
@@ -310,7 +310,7 @@ bool dfs(Node* t, int depth, vector<int> &phi) {
                     ret = ret || dfs(t, depth -1, phi);
                     if (ret) return ret;
                     move(t, k-ib+ia, k, ia);
-                    cerr << "Up  : "; inorder(t); cerr << endl;
+                    //cerr << "Up  : "; inorder(t); cerr << endl;
                 }
             }
         }
@@ -343,15 +343,13 @@ bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
         	}
             nodeat[i] = new Node(i);
             root = ins(root, nodeat[i], k++);
-            cerr << "Path : "; inorder(root); cerr << endl;
+            /*cerr << "Path : "; inorder(root); cerr << endl;
             for (int i=0; i<k; ++i) {
                 int a = value(root, i), b = value(root, (i+1)%k);
                 if(E_adj[a].find(b) == E_adj[a].end()) {
                 fprintf(stderr, "(%d, %d), ", a, b);
                 }
-            }cerr << endl;
-
-            //cerr << "dfs : "; inorder(root); cerr << endl;
+            }cerr << endl;*/
             // Do dfs
             bool d = dfs(root, T, phi);
         	if (d) {
@@ -378,8 +376,8 @@ void phase3(vector<int> &phi) {
     for(auto it = C.begin(); it != C.end(); ++it) {
         if (it->second < 1) continue;
         bool outcome = false;
-        cerr << "Cycle 1 : "; pcycle(phi, max);
-        cerr << "Cycle 2 : "; pcycle(phi, it->first);
+        /*cerr << "Cycle 1 : "; pcycle(phi, max);
+        cerr << "Cycle 2 : "; pcycle(phi, it->first);*/
         //for(int i=it->first; phi[i] != it->first; i = phi[i]) 
         int i = it->first;
         do{
