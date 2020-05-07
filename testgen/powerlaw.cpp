@@ -45,8 +45,9 @@ int main(int argc, char **argv) {
         vcopy[n].clear();
         for(int i=0; i<vcopy[c].size()-1; ++i) {
             array<int, 2> edge = {vcopy[c][i], vcopy[c][i+1]};
-            if (E.find(edge) == E.end()) {
+            if (E.find(edge) == E.end() && vcopy[c][i] != vcopy[c][i+1]) {
                E.insert(edge);
+               E.insert({vcopy[c][i+1], vcopy[c][i]});
                i++;
             }
             else {
@@ -64,10 +65,10 @@ int main(int argc, char **argv) {
     cerr << n << " " << m << endl;
     cerr << E.size() <<  " " << iter << endl;
 
-    /*vector<int> perm(n);
+    vector<int> perm(n);
     for(int i=0; i<n; ++i) perm[i]=i;
     shuffle(perm.begin(), perm.end(), rng);
-    cout << n << " " << m << endl;
-    for(auto it : E) cout << perm[it[0]] << " " << perm[it[1]] << endl;*/
+    cout << n << " " << E.size() << endl;
+    for(auto it : E) cout << perm[it[0]] << " " << perm[it[1]] << endl;
 }
 

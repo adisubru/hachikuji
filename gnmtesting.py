@@ -14,10 +14,10 @@ def runDHAM(g):
     return outs
             
 def runtests():
-    n = 100 
+    n = 1000 
     timesheet = {}
     accrsheet = {}
-    while n < 12001:
+    while n < 4001:
         avgs = []
         accr = []
         for c in range(1):
@@ -36,7 +36,7 @@ def runtests():
             accr.append(len(times)/count)
         timesheet[n] = avgs
         accrsheet[n] = accr
-        n = n + 100
+        n = n + 1000
     a, b = pd.DataFrame(timesheet), pd.DataFrame(accrsheet)
     a.to_csv('time.csv')
     b.to_csv('accr.csv')

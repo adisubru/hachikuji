@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
         }
     }
     
-    // Finding m_star. Can surely be done while checking for d validity
+    /* Finding m_star. Can surely be done while checking for d validity
     set<int> in, out;
     int ms = 0;
     auto E = g.edges();
@@ -49,8 +49,8 @@ int main(int argc, char **argv) {
         auto e = E[ms++];
         in.insert(e.first);
         out.insert(e.second);
-    }
-    cout << n << " " << m << " " << ms << "\n" ;
+    }*/
+    cout << n << " " << m << " \n" ;
     cout << g << endl;
     
 }
