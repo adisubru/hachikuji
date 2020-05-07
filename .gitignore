@@ -1,4 +1,5 @@
 graphgen
+powerlaw
 main
 *.in
 *.out

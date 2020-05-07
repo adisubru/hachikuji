@@ -14,15 +14,16 @@ def runDHAM(g):
     return outs
             
 def runtests():
-    n = 500 
+    n = 100 
     timesheet = {}
     accrsheet = {}
-    while n < 5000:
+    while n < 12001:
         avgs = []
         accr = []
-        for c in range(5):
+        for c in range(1):
+            c = 6
             times = []
-            count = 50
+            count = 10
             for x in range(count):
                 g = gengraph(n, c)
                 outp = runDHAM(g).decode()
@@ -35,7 +36,7 @@ def runtests():
             accr.append(len(times)/count)
         timesheet[n] = avgs
         accrsheet[n] = accr
-        n = n + 500
+        n = n + 100
     a, b = pd.DataFrame(timesheet), pd.DataFrame(accrsheet)
     a.to_csv('time.csv')
     b.to_csv('accr.csv')

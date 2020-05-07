@@ -4,6 +4,7 @@ using namespace std;
 extern vector<set<int>> E_adj, E_ms;
 extern vector<array<int, 2>> E_list;
 int m_star;
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 
 /***************************      PHASE - 1      ******************************/
@@ -57,7 +58,6 @@ struct Dinic {
 
 vector<int> phase1(int n, int ms) {
     m_star = ms;
-    mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
     // random permutation and it's inverse
     vector<int> sigma(n), sigmai(n);
     for(int i=0; i<n; i++) sigma[i]=i;
@@ -67,14 +67,14 @@ vector<int> phase1(int n, int ms) {
     // Creating a edge set with avg in/out-degree 10
     set< array<int, 2> > Ep, Em, Ecap;
     vector<int> dEp(n), dEm(n);
-    for(int i=0; i<ms; i++) {
+    for(int i=0; /*i<2*ms &&*/ i < E_list.size(); i++) {
         auto e = E_list[i];
         if(dEp[e[0]] < 10) {
             Ep.insert({e[0], sigma[e[1]]});
             dEp[e[0]]++;
         }
     }
-    for(int i=0; i<ms; i++) {
+    for(int i=0; /*i<2*ms &&*/ i < E_list.size(); i++) {
         auto e = E_list[i];
         array<int, 2> ecap = {e[0], sigma[e[1]]};
         if( (dEm[sigma[e[1]]] < 10) && (Ep.find(ecap) != Ep.end()) ){
@@ -191,7 +191,7 @@ void phase2(vector<int> &phi) {
 struct Node {
     Node *l = 0, *r = 0, *p = 0;
     int val, y, c = 1;
-    Node(int val) : val(val), y(rand()) {}
+    Node(int val) : val(val), y(rng()) {}
     void recalc();
 };
 
@@ -279,12 +279,12 @@ bool dfs(Node* t, int depth, vector<int> &phi) {
     bool ret = false;
     used[last] = true;
 
-    for(auto a : E_ms[last]) {
+    for(auto a : E_adj[last]) {
         if (!nodeat[a]) continue;
         int ia = key(t, nodeat[a]);
         if(ia == 0) continue;
         int a1 = value(t, ia-1);
-        for(auto b : E_ms[a1]) {
+        for(auto b : E_adj[a1]) {
             if (!nodeat[b]) continue;
             int ib = key(t, nodeat[b]);
             if(ib > ia) {
@@ -301,7 +301,7 @@ bool dfs(Node* t, int depth, vector<int> &phi) {
                             fprintf(stderr, "(%d, %d), ", a, b);
                         }
                     }cerr << endl;*/
-                    if (E_ms[value(t, k-1)].find(value(t, 0)) != E_ms[value(t, k-1)].end()) {
+                    if (E_adj[value(t, k-1)].find(value(t, 0)) != E_adj[value(t, k-1)].end()) {
                         for(int i=0; i<k; ++i) {
                             phi[value(t, i)] = value(t, (i+1)%k);
                         }
@@ -323,7 +323,7 @@ bool findcycle(int C1, int Ci, int i, vector<int> &phi) {
     int T = ceil((2.0*log2(n))/(3.0*log2(log2(n))));
     
     //create each path in rho0, and explore them (depth limited)
-    for(auto it : E_ms[xj]) {
+    for(auto it : E_adj[xj]) {
         if(cycle.find(it) == cycle.find(C1) ) {
             used.assign(n, false);
             nodeat.assign(n, nullptr);
