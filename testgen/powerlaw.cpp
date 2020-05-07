@@ -5,52 +5,69 @@ using namespace std;
 int main(int argc, char **argv) {
     mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
     //Number of vertices and edges
-    int a = 100, degsum = 0;
-    double b = 0.4;
+    double a = 3, b = 0.5;
     if(argc > 1) {
-        a = atoi( argv[1] );
+        a = atof( argv[1] );
     }
     if(argc > 2) {
         b = atof( argv[2] );
     }
     
-    vector<int> degseq, vcopy, vcopy2;
+    vector<int> vcopy[2];
     set<array<int, 2>> E;
-    long maxdeg = exp(a/b), vno=0;
-    cerr << a << " " << b << " " << a/b << " " << maxdeg << endl;
+    long maxdeg = exp(a/b), n=0, degsum=0;
     for(long x=2; x<=maxdeg; ++x) {
-        int y = a - b * log(x);
-        for(int i=0; i<=y; ++i) {
-            degseq.push_back(x);
-            for(int j=0; j<y; ++j)
-                vcopy.push_back(vno);
-            vno++;
+        int y = exp(a)/pow(x, b);
+        for(int i=0; i<y; ++i) {
+            //degseq.push_back(x);
+            for(int j=0; j<x; ++j)
+                vcopy[0].push_back(n);
+            n++;
             degsum += x;
+            //cerr << vcopy.size() << " " << degsum << endl;
         }
     }
     if (degsum%2) {
-        degseq.push_back(3);
+        //degseq.push_back(3);
         degsum += 3;
         for(int i=0; i<3; ++i)
-            vcopy.push_back(vno);
+            vcopy[0].push_back(n);
+        n++;
     }
     int m = degsum/2;
 
-    cerr << degseq.size() << " " << m << endl;
-    //for(auto it : degseq) cerr << it << " ";
     
-    shuffle(vcopy.begin(), vcopy.end(), rng);
-
-    for(int i=0; i<vcopy.size()-1; ++i) {
-        array<int, 2> edge = {vcopy[i], vcopy[i+1]};
-        if (E.find(edge) == E.end()) {
-           E.insert(edge);
-           i++;
+    int iter = 0;
+    while(iter < 10) {
+        //creating the edge set
+        int c = iter%2, n = (iter+1)%2;
+        shuffle(vcopy[c].begin(), vcopy[c].end(), rng);
+        vcopy[n].clear();
+        for(int i=0; i<vcopy[c].size()-1; ++i) {
+            array<int, 2> edge = {vcopy[c][i], vcopy[c][i+1]};
+            if (E.find(edge) == E.end()) {
+               E.insert(edge);
+               i++;
+            }
+            else {
+                vcopy[n].push_back(vcopy[c][i]);
+                if (i == vcopy[c].size()-2)
+                    vcopy[n].push_back(vcopy[c][i+1]);
+            }
         }
-        else {
-            vcopy2.push_back(vcopy[i]);
-        }
+        cerr << iter << " " << vcopy[c].size() << " " << vcopy[n].size() << endl;
+        iter++;
+        if (vcopy[n].size() < 2) break;
     }
-    cerr << m << " " << E.size() << " " << vcopy2.size();
+    
+    cerr << a << " " << b << " " << a/b << " " << maxdeg << endl;
+    cerr << n << " " << m << endl;
+    cerr << E.size() <<  " " << iter << endl;
+
+    /*vector<int> perm(n);
+    for(int i=0; i<n; ++i) perm[i]=i;
+    shuffle(perm.begin(), perm.end(), rng);
+    cout << n << " " << m << endl;
+    for(auto it : E) cout << perm[it[0]] << " " << perm[it[1]] << endl;*/
 }
 
