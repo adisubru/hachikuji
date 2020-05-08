@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 
     vector<int> perm(n);
     for(int i=0; i<n; ++i) perm[i]=i;
-    //shuffle(perm.begin(), perm.end(), rng);
+    shuffle(perm.begin(), perm.end(), rng);
     cout << n << " " << E.size() << endl;
     for(auto it : E) cout << perm[it[0]] << " " << perm[it[1]] << endl;
 }
