@@ -172,7 +172,7 @@ void phase2(vector<int> &phi) {
     bool flag = true;
     while(flag) {
         flag = false;
-        for(int i=0; i<m2; ++i) {
+        for(int i=0; i<m2 && i<E_list.size(); ++i) {
             int x = E_list[i][0], y = E_list[i][1], z = phi_i[E_list[i][1]], w = phi[E_list[i][0]];
             if(cycle.find(x) != cycle.find(y) && E_adj[z].find(w) != E_adj[z].end() ) {
                 cycle.unoin(x, y);
@@ -387,7 +387,7 @@ void phase3(vector<int> &phi) {
                 //cerr << "Cycle n : "; pcycle(phi, max); cerr << endl;
                 break;
             }
-            cerr << endl;
+            //cerr << endl;
             i = phi[i];
         }while(i != it->first);
         if(!outcome) {

@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 
     
     int iter = 0;
-    while(iter < 10) {
+    while(iter < 100) {
         //creating the edge set
         int c = iter%2, n = (iter+1)%2;
         shuffle(vcopy[c].begin(), vcopy[c].end(), rng);
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
             array<int, 2> edge = {vcopy[c][i], vcopy[c][i+1]};
             if (E.find(edge) == E.end() && vcopy[c][i] != vcopy[c][i+1]) {
                E.insert(edge);
-               E.insert({vcopy[c][i+1], vcopy[c][i]});
+               //E.insert({vcopy[c][i+1], vcopy[c][i]});
                i++;
             }
             else {
@@ -68,7 +68,8 @@ int main(int argc, char **argv) {
     vector<int> perm(n);
     for(int i=0; i<n; ++i) perm[i]=i;
     shuffle(perm.begin(), perm.end(), rng);
-    cout << n << " " << E.size() << endl;
+    //cout << n << " " << E.size() << endl;
+    for(int i=0; i<n; ++i) cout << i << endl;
     for(auto it : E) cout << perm[it[0]] << " " << perm[it[1]] << endl;
 }
 

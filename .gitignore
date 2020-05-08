@@ -1,5 +1,6 @@
 graphgen
 powerlaw
+kregular
 main
 *.in
 *.out
