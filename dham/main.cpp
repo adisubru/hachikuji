@@ -35,7 +35,7 @@ bool checkvalid(vector<int> &p) {
     return true;
 }
 
-void calcms(int &ms, int n) {
+void calcms(int &ms, uint n) {
     set<int> in, out;
     ms = 0;
     long m = E_list.size();
@@ -60,11 +60,16 @@ int main(void) {
     for( int i=0; i<m; i++) {
         int u, v;
         cin >> u >> v; 
-        E_adj[u].insert(v);
+        //cerr << u << " " << v << endl;
+        //E_adj[u].insert(v);
         E_list.push_back({u, v});
     }
     shuffle(E_list.begin(), E_list.end(), rng);
     calcms(ms, n);
+    for(int i=0; i<ms; ++i) {
+        int u = E_list[i][0], v = E_list[i][1];
+        E_adj[u].insert(v);
+    }
 
     auto start = chrono::high_resolution_clock::now(); 
     bool valid = true;

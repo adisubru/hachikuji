@@ -14,10 +14,10 @@ def runDHAM(g):
     return outs
             
 def runtests():
-    n = 4500 
+    n = 6500 
     timesheet = {}
     accrsheet = {}
-    while n < 13001:
+    while n < 16001:
         avgs = []
         accr = []
         for c in range(1):

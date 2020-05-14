@@ -67,14 +67,14 @@ vector<int> phase1(int n, int ms) {
     // Creating a edge set with avg in/out-degree 10
     set< array<int, 2> > Ep, Em, Ecap;
     vector<int> dEp(n), dEm(n);
-    for(int i=0; i<2*ms && i < E_list.size(); i++) {
+    for(int i=0; i<ms /*&& i < E_list.size()*/; i++) {
         auto e = E_list[i];
         if(dEp[e[0]] < 10) {
             Ep.insert({e[0], sigma[e[1]]});
             dEp[e[0]]++;
         }
     }
-    for(int i=0; i<2*ms && i < E_list.size(); i++) {
+    for(int i=0; i<ms /*&& i < E_list.size()*/; i++) {
         auto e = E_list[i];
         array<int, 2> ecap = {e[0], sigma[e[1]]};
         if( (dEm[sigma[e[1]]] < 10) && (Ep.find(ecap) != Ep.end()) ){
@@ -159,7 +159,7 @@ struct DSU {
 
 void phase2(vector<int> &phi) {
     int n = phi.size();
-    int m2 = ceil(n*log2(n)*5.0/6.0);
+    uint m2 = ceil(n*log2(n)*5.0/6.0);
     
     cycle.initialize(n);
     vector<int> phi_i(n);
@@ -172,7 +172,7 @@ void phase2(vector<int> &phi) {
     bool flag = true;
     while(flag) {
         flag = false;
-        for(int i=0; i<m2 && i<E_list.size(); ++i) {
+        for(uint i=0; i<m2 && i<E_list.size(); ++i) {
             int x = E_list[i][0], y = E_list[i][1], z = phi_i[E_list[i][1]], w = phi[E_list[i][0]];
             if(cycle.find(x) != cycle.find(y) && E_adj[z].find(w) != E_adj[z].end() ) {
                 cycle.unoin(x, y);

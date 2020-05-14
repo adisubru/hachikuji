@@ -1,7 +1,11 @@
 graphgen
 powerlaw
 kregular
+tourna
+kinout
+nlift
 main
+
 *.in
 *.out
 *.csv

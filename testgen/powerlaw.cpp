@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-#include "jngen.h"
 using namespace std;
 
 int main(int argc, char **argv) {
@@ -16,7 +15,7 @@ int main(int argc, char **argv) {
     vector<int> vcopy[2];
     set<array<int, 2>> E;
     long maxdeg = exp(a/b), n=0, degsum=0;
-    for(long x=2; x<=maxdeg; ++x) {
+    for(long x=6; x<=maxdeg; ++x) {
         int y = exp(a)/pow(x, b);
         for(int i=0; i<y; ++i) {
             //degseq.push_back(x);
@@ -68,8 +67,8 @@ int main(int argc, char **argv) {
     vector<int> perm(n);
     for(int i=0; i<n; ++i) perm[i]=i;
     shuffle(perm.begin(), perm.end(), rng);
-    //cout << n << " " << E.size() << endl;
-    for(int i=0; i<n; ++i) cout << i << endl;
+    cout << n << " " << E.size() << endl;
+    //for(int i=0; i<n; ++i) cout << i << endl;
     for(auto it : E) cout << perm[it[0]] << " " << perm[it[1]] << endl;
 }
 
