@@ -6,6 +6,7 @@ using namespace std;
 
 vector<set<int>> E_adj;
 vector<array<int, 2>> E_list;
+int modalg = 1;
 
 int numcycles(vector<int> &p) {
     vector<int> used(size(p));
@@ -26,7 +27,7 @@ int numcycles(vector<int> &p) {
 bool checkvalid(vector<int> &p) {
     if (p.empty())
         return false;
-    for(unsigned int i=0; i<p.size(); i++) {
+    for(uint i=0; i<p.size(); i++) {
         if (E_adj[i].find(p[i]) == E_adj[i].end()) {
             fprintf(stderr, "Edge (%d, %d) not in graph\n", i, p[i]);
             return false;
@@ -51,9 +52,12 @@ void calcms(int &ms, uint n) {
 
 }
 
-int main(void) {
+int main(int argc, char* argv[]) {
     fast;
     mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+    if (argc > 1) {
+        modalg = atoi(argv[1]);
+    }
     int n, m, ms; //size of vertex and edge set respectively
     cin >> n >> m;
     E_adj.resize(n);
@@ -66,7 +70,7 @@ int main(void) {
     }
     shuffle(E_list.begin(), E_list.end(), rng);
     calcms(ms, n);
-    for(int i=0; i<ms; ++i) {
+    for(int i=0; i<modalg*ms && i<m; ++i) {
         int u = E_list[i][0], v = E_list[i][1];
         E_adj[u].insert(v);
     }

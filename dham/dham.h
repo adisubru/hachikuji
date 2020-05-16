@@ -3,6 +3,7 @@ using namespace std;
 
 extern vector<set<int>> E_adj;
 extern vector<array<int, 2>> E_list;
+extern int modalg;
 int m_star;
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
@@ -67,14 +68,14 @@ vector<int> phase1(int n, int ms) {
     // Creating a edge set with avg in/out-degree 10
     set< array<int, 2> > Ep, Em, Ecap;
     vector<int> dEp(n), dEm(n);
-    for(int i=0; i<ms /*&& i < E_list.size()*/; i++) {
+    for(uint i=0; i<modalg*ms && i < E_list.size(); i++) {
         auto e = E_list[i];
         if(dEp[e[0]] < 10) {
             Ep.insert({e[0], sigma[e[1]]});
             dEp[e[0]]++;
         }
     }
-    for(int i=0; i<ms /*&& i < E_list.size()*/; i++) {
+    for(uint i=0; i<modalg*ms && i < E_list.size(); i++) {
         auto e = E_list[i];
         array<int, 2> ecap = {e[0], sigma[e[1]]};
         if( (dEm[sigma[e[1]]] < 10) && (Ep.find(ecap) != Ep.end()) ){
