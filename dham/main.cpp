@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
     valid = valid && checkvalid(matching);
     auto stop = chrono::high_resolution_clock::now(); 
 
-    if (valid) {
+    if (valid && cyc == 1) {
         auto time = chrono::duration_cast<chrono::milliseconds>(stop - start);
         fprintf(stdout, "%d %ld %d %d\n", 1, time.count(), ms, m);
     }
