@@ -2,7 +2,7 @@
 using namespace std;
 
 int main(int argc, char **argv) {
-    mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+    mt19937 rng(chrono::high_resolution_clock::now().time_since_epoch().count());
     int h = 3, n = 100;
     if (argc > 1) {
         h = atoi( argv[1] );
