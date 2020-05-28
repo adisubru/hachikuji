@@ -1,0 +1,20 @@
+\chapter{Literature Review}
+\label{ch:review}
+\vspace{2em}
+
+P. Erdős and  A. Rényi started the study of Random Graphs \cite{erds:rand} in 1960, and in the same paper also asked the question about the existence of a Hamiltonian path in a random undirected graph. 
+This problem has been extensively studied over the years with a recent survey by Frieze \cite{frieze:2019survey} giving a very good introduction to all the different directions that this study of Hamiltonian Cycles in Random graphs has taken.
+
+Pósa\cite{posa:ham} and Komlós$\&$ E. Szemerédi\cite{komlos:undir} made significant advances in the undirected version of the problem, showing that in $G_{n, m}$, $m \in \bigO(n\log n)$ is sufficient for a graph to be Hamiltonian.
+
+Bollobas \cite{boll:ham} improved this result by showing that
+\[ \lim_{n \rightarrow \infty} Pr( G_{m^*} \text{is hamiltonian}) = 1 \]
+where $G_m$ is defined as the graph obtained by taking the first $m$ edges from the list $E = \{ e_1, e_2, \cdots e_{\frac{n(n-1)}{2}} \}$ obtained by permuting the edges of a complete graph on $n$ vertices, and $m^* = min\{m : \delta(G_m) \ge 2\}$
+
+An analogous result for directed graphs was given by Frieze \cite{frieze:dham} while also giving a $\bigO(n^{1.5})$ algorithm(DHAM)  showing that 
+\[ \lim_{n \rightarrow \infty} Pr( \text{DHAM finds a hamilton cycle in } D_{m^*} ) = 1 \]
+where $D_m$ is the directed analogue of $G_m$ defined above, and $m^* = min\{m : \delta^+(D_m) \ge 1, \delta^-(D_m) \ge 1\}$
+
+The algorithm is divided into 3 phases, the first obtains a permutation digraph from the given graph (which is obtaining a permutation on the set of vertices such that they form $\bigO(\log n)$ cycles). The second merges some of the these cycles to get an asymptotically larger cycle. And the final phase merges all cycles to obtain the desired Hamiltonian cycle.
+
+A somewhat similar 3-phase method has been used to obtain existential results on more classes of graphs (cite a few papers here and elaborate). These results do not usually explicitly give an algorithm, or try to bound the runtime of the same. In our thesis, we attempt to use the above 3-phase algorithm, to experimentally see, if the DHAM algorithm also runs successfully with polynomial growth on these classes of graphs.

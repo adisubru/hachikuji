@@ -1,0 +1,13 @@
+\chapter{Conclusion and Future Work}
+\label{ch:concl}
+
+\section{Conclusion}
+After having looked at DHAM with respect to different classes of graphs, we did not observe a exponential rate of growth for any of these models (upto the sizes of n, that are practicall to simulate). Our results suggest that DHAM successfully finds the cycle in most Hamiltonian graphs, though the probability of finding such a cycle starts to drop with the minimum degree in the graph dropping below 7.
+
+We also verified the original claims made by the algorithm and noted that slightly modifying the algorithm to consider a constant multiple more edges could reduce the number of attemps required to find a Hamilton Cycle without any significant impact on the runtime.
+
+\section{Future Research Directions}
+
+With encouraging results like described above, one future direction of research is to theoretically bound the runtime of this algorithm on the models of graphs we looked at. 
+
+Another interesting direction to look at is to see if the $\bigO(n\log n)$ bipartite matching algorithm given by Karp, Rinnooy-Kan, and Vohra\cite{karp:bip} can be used to improve the runtime bound on phase 1 of DHAM. Though the runtime does look better at first sight, we are not sure if the runtime/correctness analysis will work out cleanly.

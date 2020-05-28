@@ -1,0 +1,48 @@
+%%% enable "DoubleSided" for paper-based submission, i.e. printing, and 
+%%% remove it for the final submission, i.e. electronic thesis
+%\newcommand*{\DoubleSided}{} 
+
+\input{_global_settings.tex}
+
+\begin{document}
+
+\title{The 3-phase approach to finding Hamilton Cycles in Random Digraphs}
+
+\author{Aditya Subramanian}
+\rollno{1610110045}
+\degree{Bachelor of Technology}
+\field{Computer Science and Engineering}
+\supervisor{Prof. Sandeep Sen}
+
+% only involve the examiners in the final submission
+
+
+\maketitle
+
+\declaredate{May 27, 2020}
+\declaresign{\RootPicDir /signature.png} 
+\declarationpage
+\certificatepage
+
+\begin{frontmatter}
+  %\dedicate{To the elves of Lothlorien}
+  \input{chapters/acknowledgments.tex}
+  \tableofcontents 
+  %\listoftables
+  \listoffigures
+  \input{chapters/abstract.tex}
+\end{frontmatter}
+
+\input{chapters/ch-intro.tex}
+\input{chapters/ch-review.tex}
+\input{chapters/ch-dham}
+\input{chapters/ch-exp}
+\input{chapters/ch-concl.tex}
+
+\bookmarksetup{startatroot}
+\printbibliography[heading=bibintoc]
+\appendix
+\input{chapters/ap-treap.tex}
+
+
+\end{document}

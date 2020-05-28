@@ -1,0 +1,91 @@
+\chapter{Storing a Path as a Tree}
+\label{append:treap}
+\vspace*{2em}
+
+In phase 3 (\autoref{algo:dham:ph3}) of the DHAM, we construct a path out of the 2 cycles being patched and search (DFS/BFS) the tree formed on this path by double rotation operations. Now, there are 2 parts to this problem: One is to store the path in such a way that the double rotations operations can be done efficiently, and the other is to identify valid double rotations, given such a path.
+
+If we make the obvious decision to store the path as a link list to make the double rotation operation constant time (by just swapping 2 of the links), the process of identifying a valid operation ends up being linear due to having to traverse the path.
+
+Instead, if we store the path as an array that making generation of valid operations faster, we realize that executing the operation itself now needs updating up to linear number of elements in the array.
+
+To get around this difficulty, we store our path as a Randomized Search Tree \cite{treap} to get a $\bigO(\log n)$ bound on both of the operations.
+
+\section{Randomized Search Tree}
+The Randomized Search Tree (or treap) as given by Aragon and Seidel \cite{treap} is based on 2 auxiliary operations - split (around a given key) and merge (assuming elements within the trees are in order of keys), to implement the main operations like insertion, deletion, union etc. The reason we choose this data structure is because we can use these auxiliary operations to also implement a double rotation by 'splitting' out a sub-array, and 'merging' it at the end.
+
+To attain all the desired functionality, we make some modifications to the data structure
+
+\subsection{Implicit Keys}
+Doing a double rotation changes the position of elements in the structure. In this situation the keys(or index) of these elements becomes inaccurate. So, instead of storing the key as a value within the node, we maintain the keys of all nodes implicitly.
+
+This is achieved by storing the size of the tree rooted at a node, and using this value to compute keys on the fly.
+
+The updated node looks like
+
+\begin{lstlisting}
+struct Node {
+    Node *left, *right, *parent;
+    int val, y, subtree_size = 1;
+    void recalc();
+};
+int cnt(Node* n) { return n ? n->subtree_size : 0; }
+void Node::recalc() { c = cnt(l) + cnt(r) + 1; }
+\end{lstlisting}
+
+The key of a node is the number of elements with a smaller key, which can be looked on as the number of elements in the left subtree (because of the BST structure). So while traversing down the tree, we can keep track of the sum of their sizes (every time we traverse to the right) to implicitly maintain the key of a node we are currently visiting.
+Modifying the split function accordingly, we get
+\begin{lstlisting}
+pair<Node*, Node*> split(Node* n, int k)
+	if (!n) return {};
+	if (cnt(n->l) >= k) {
+		auto pa = split(n->l, k);
+		n->l = pa.second;
+		n->recalc();
+		return {pa.first, n};
+	} else {
+		auto pa = split(n->r, k - cnt(n->l) - 1);
+		n->r = pa.first;
+		n->recalc();
+		return {n, pa.second};
+	}
+\end{lstlisting}
+
+The merge function remains largely the same since we do not access the keys of a node, assuming them to already be in order.
+
+
+\subsection{key $\iff$ value conversions}
+With keys being automatically updated, we only need to add the functionality to return the value given a key (accessing an element) and return a key given the value (search operation). These operations will allow us to generate valid operations efficiently.
+These can simply be implemented in $\bigO(\log n)$ as shown below
+\begin{lstlisting}
+int key(Node* root, Node* x) {
+    if (tree==nullptr || x==nullptr) return -1;
+    int ans = cnt(x->l);
+    while(x != root) {
+        auto par = x->p;
+        if (par->r == x)
+            ans += 1 + cnt(par->l);
+        x = par;
+    }
+    return ans;
+}
+
+int value(Node *n, int key) {
+    if (!n) return -1;
+    if (cnt(n->l) == key) return n->val;
+    else if (cnt(n->l) > key) return value(n->l, key);
+    else return value(n->r, key - cnt(n->l) - 1);
+}
+\end{lstlisting}
+
+\newpage
+\section{Double Rotation}
+Armed with the tools described above, we can implement the double rotation operation to move the subarray $[l, r)$ to the index $k$ in $\bigO(\log n)$ time.
+
+\begin{lstlisting}
+void move(Node*& t, int l, int r, int k) {
+    Node *a, *b, *c;
+    tie(a,b) = split(t, l); tie(b,c) = split(b, r - l);
+    if (k <= l) t = merge(ins(a, b, k), c);
+    else t = merge(a, ins(c, b, k - r));
+}
+\end{lstlisting}

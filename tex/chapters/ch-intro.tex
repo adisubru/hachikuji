@@ -1,0 +1,51 @@
+\SetPicSubDir{ch-Intro}
+
+\chapter{Introduction}
+\vspace{2em}
+
+The concept of graphs was first used by Leonhard Euler to study the Königsberg bridges problem \cite{euler:konis} in 1735. This laid the foundation for field of mathematics known as graph theory. 
+
+\noindent
+These days graphs are used to model and study complex networks. Networks like the internet, electric grid, road networks, social networks etc. are too large to be directly studied.  In such situations a mathematical modelling of the structure allows us to study it's properties more efficiently.
+
+\noindent
+In this thesis we shall be studying one such property of a graph known as it's hamiltonicity, on particular classes of graphs.
+
+\section{Preliminaries}
+In the following section we shall briefly introduce some of the preliminaries and conventions that shall be used throughout the thesis.
+
+\subsection{Graph Theory}
+
+\begin{defn}
+We define a \textbf{Graph} $G$ as the pair of sets $(V, E)$ where $V$ is the \textit{vertex set}, and the \textit{edge set}, $E \subseteq V \times V$.
+\end{defn}
+In an \textit{undirected graph} the order of vertices in an edge does not matter. In such graphs we represent an edge as $\{u, v\}$. On the other hand, in a \textit{directed graph} (or digraph) the order of vertices in an edge matters. Edges in such a graph are represented as $(u, v)$.
+
+\begin{defn}
+The number of edges \textit{adjacent} to a vertex, is known as the \textbf{Degree} of that vertex.
+\end{defn}
+Note that in a directed graph, we have separate in and out-degrees for each vertex. Henceforth, we shall be using $\delta$ to represent the minimum degree of a vertex in a graph, and similarly $\Delta$ to represent the maximum degree.
+
+\begin{defn}
+A sequence of distinct vertices $P = v_0, v_1, \cdots v_k$ in a directed graph $G(V, E)$, where $\forall i<k, e_i = (v_i, v_{i+1}) \in E$ is known as a \textbf{Path} in the graph.
+\end{defn}
+
+\begin{defn}
+A path $C = v_0, v_1, \cdots v_k$ in graph $G(V, E)$ where $v_0 = v_k$ is known as a \textbf{Cycle}.
+\end{defn}
+
+\begin{defn}
+A cycle $C$ such that it passes through every vertex of the graph, is called a \textbf{Hamiltonian Cycle}.
+A graph which contains a Hamiltonian cycle, is said to be a \textbf{Hamiltonian Graph}.
+\end{defn}
+
+\subsection{Random Graph Models}
+The graphs we shall be looking at in this thesis shall all be sampled from one of the distributions described below.
+\begin{description}
+    \item[$D_{n, m}$ model: ] A graph is picked uniformly at random from the set of all digraphs with $n$ vertices and $m$ edges.
+    \item[$k$-in, $k$-out: ] In the $D_{k-in, k-out}$ model, for a graph with $n$ vertices, $k$ in-neighbours and $l$ out-neighbours are chosen independently at random from the vertex set $V_n$. 
+    \item[$k$-regular digraph: ] In a random regular digraph $D_{n, k}$, each of the n vertices has in-degree and out-degree exactly k.
+    \item[Powerlaw graphs: ] Given a fixed degree sequence that has a power law tail, we pick a graph uniformly at random from the set of all graphs that realize the given degree seqence.
+    \item[Random Tournaments: ] In a complete graph $K_n$, we assign a direction uniformly at random to each edge.
+    \item[Random n-lifts: ] The \textit{n-lift} of a given graph $G(V, E)$, is obtained by replacing each vertex in $V$ by a set of n vertices, and by adding a random perfect matching (between the corresponding sets of $u \& v$) for every $e_i = (u, v) \in E$, .
+\end{description}

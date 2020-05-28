@@ -5,8 +5,8 @@ tourna
 kinout
 nlift
 main
+checkms
 
 *.in
 *.out
-*.csv
 *.png
