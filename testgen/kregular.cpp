@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
         cerr << "k cannot be greater than n\n";
         return 0;
     }
-    
+
     set<array<int, 2>> E;
     vector<int> perm(n);
     for(int i=0; i<n; ++i) perm[i]=i;
@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
         for(int j=0; j<n; ++j) {
             E.insert({j, perm[j]});
         }
-    } 
+    }
 
     cout << n << " " << E.size() << endl;
     for(auto it : E) cout << perm[it[0]] << " " << perm[it[1]] << endl;

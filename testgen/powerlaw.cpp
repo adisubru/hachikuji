@@ -11,21 +11,39 @@ int main(int argc, char **argv) {
     if(argc > 2) {
         b = atof( argv[2] );
     }
-    
-    vector<int> vcopy[2];
+
+    vector<int> degseq, vcopy[2];
     set<array<int, 2>> E;
-    long maxdeg = exp(a/b), n=0, degsum=0;
-    for(long x=6; x<=maxdeg; ++x) {
+    long maxdeg = exp(a/b), degsum=0;
+    for(long x=maxdeg; x>5; --x) {
         int y = exp(a)/pow(x, b);
         for(int i=0; i<y; ++i) {
-            //degseq.push_back(x);
-            for(int j=0; j<x; ++j)
-                vcopy[0].push_back(n);
-            n++;
+            degseq.push_back(x);
             degsum += x;
             //cerr << vcopy.size() << " " << degsum << endl;
         }
     }
+
+    double avgdeg = (double)degsum/degseq.size();
+    long mindeg = 10*sqrt(avgdeg);
+    degsum=0;
+    for(int i=0; i<degseq.size(); ++i){
+        if (degseq[i] < mindeg) {
+            degseq.resize(i);
+            break;
+        }
+        degsum += degseq[i];
+        for(int j=0; j<degseq[i]; ++j)
+            vcopy[0].push_back(i);
+    }
+    avgdeg = degsum/degseq.size();
+    if (avgdeg > pow(degseq.size(), 0.666666)) {
+        cerr << "cond fail" << avgdeg << " " << pow(degseq.size(), 0.666666) << endl;;
+    }
+    cerr << degseq.size() << endl;
+    for(auto it : degseq) cerr << it << " "; cerr << endl;
+
+    /*
     if (degsum%2) {
         //degseq.push_back(3);
         degsum += 3;
@@ -35,9 +53,9 @@ int main(int argc, char **argv) {
     }
     int m = degsum/2;
 
-    
+
     int iter = 0;
-    while(iter < 100) {
+    while(iter < 2) {
         //creating the edge set
         int c = iter%2, n = (iter+1)%2;
         shuffle(vcopy[c].begin(), vcopy[c].end(), rng);
@@ -59,7 +77,7 @@ int main(int argc, char **argv) {
         iter++;
         if (vcopy[n].size() < 2) break;
     }
-    
+
     cerr << a << " " << b << " " << a/b << " " << maxdeg << endl;
     cerr << n << " " << m << endl;
     cerr << E.size() <<  " " << iter << endl;
@@ -70,5 +88,6 @@ int main(int argc, char **argv) {
     cout << n << " " << E.size() << endl;
     //for(int i=0; i<n; ++i) cout << i << endl;
     for(auto it : E) cout << perm[it[0]] << " " << perm[it[1]] << endl;
+    */
 }
 

@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
         cerr << "k cannot be greater than n\n";
         return 0;
     }
-    
+
     set<array<int, 2>> E;
     vector<int> perm(n);
     for(int i=0; i<n; ++i) perm[i]=i;
@@ -27,18 +27,18 @@ int main(int argc, char **argv) {
             int x = uniform_int_distribution<int>(0, n)(rng);
             if (E.find({x, i}) == E.end())
                 E.insert({x, i});
-            else 
+            else
                 j--;
         }
-        
+
         for(int j=0; j<out; ++j) {
             int x = uniform_int_distribution<int>(0, n)(rng);
             if (E.find({i, x}) == E.end())
                 E.insert({i, x});
-            else 
+            else
                 j--;
         }
-    } 
+    }
 
     cout << n << " " << E.size() << endl;
     for(auto it : E) cout << perm[it[0]] << " " << perm[it[1]] << endl;

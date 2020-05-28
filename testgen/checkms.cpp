@@ -41,17 +41,26 @@ int main(int argc, char **argv) {
         }
     }
 
-    /* Finding m_star. Can surely be done while checking for d validity
-    set<int> in, out;
+    //Finding m_star. Can surely be done while checking for d validity
+    set<int> in, out, in2, out2;
     int ms = 0;
     auto E = g.edges();
     while( in.size() < n  ||  out.size() < n) {
         auto e = E[ms++];
+        if( in.find(e.first) != in.end() )
+            in2.insert(e.first);
+        if( out.find(e.second) != out.end() )
+            out2.insert(e.second);
         in.insert(e.first);
         out.insert(e.second);
-    }*/
-    cout << n << " " << m << " \n" ;
-    cout << g << endl;
+    }
+    int ms2 = ms;
+    while( in2.size() < n  ||  out2.size() < n) {
+        auto e = E[ms2++];
+        in2.insert(e.first);
+        out2.insert(e.second);
+    }
+    cout << ms << " " << ms2 << endl;
 
 }
 

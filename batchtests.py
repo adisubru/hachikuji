@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 def gengraph(n = 100, c = 0, d = 1):
-    stream = subprocess.Popen(['testgen/graphgen', str(n), str(c), str(d)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stream = subprocess.Popen(['testgen/nlift', str(n), str(c), str(d)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     graph, err = stream.communicate()
     return graph
 
@@ -14,24 +14,24 @@ def runDHAM(g, modalg=1):
     return outs
             
 def runtests():
-    n = 500
+    n = 100
     timesheet = {}
     accrsheet = {}
     atmpsheet = {}
-    while n < 10001:
+    while n < 1501:
         avgs = []
         accr = []
         atmp = []
-        for k in range(1):
+        for k in [3]:
             times = []
-            count = 10 
+            count = 20
             attemptsum = 0
             for x in range(count):
-                g = gengraph(n)
+                g = gengraph(k, n)
                 attempt=0
-                while attempt < 100: 
+                while attempt < 50: 
                     attempt = attempt + 1
-                    outp = runDHAM(g).decode()
+                    outp = runDHAM(g, 3).decode()
                     ans = [int(s) for s in outp.split() if s.isdigit()]
                     if ans[0] == 1:
                         times.append(ans[1])
@@ -48,7 +48,7 @@ def runtests():
         timesheet[n] = avgs
         atmpsheet[n] = atmp
         accrsheet[n] = accr
-        n = n + 500
+        n = n + 200
     a, b, c = pd.DataFrame(timesheet), pd.DataFrame(accrsheet), pd.DataFrame(atmpsheet)
     a.transpose().to_csv('time.csv')
     b.transpose().to_csv('accr.csv')

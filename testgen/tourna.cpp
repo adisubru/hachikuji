@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
             else
                 E.insert({j, i});
         }
-    } 
+    }
 
     cout << n << " " << E.size() << endl;
     for(auto it : E) cout << it[0] << " " << it[1] << endl;
