@@ -1,7 +1,7 @@
 # hachishiji
 
 ## About
-This project implements a randomized algorithm to find hamimltonian cycles in digraphs.
+This project implements a randomized algorithm to find hamimltonian cycles in digraphs. This was a part of my undergrad thesis at SNU.
 
 ## References
  * [A. M. Frieze, An algorithm for finding hamilton cycles in random directed graphs(1986)](https://doi.org/10.1016/0196-6774(88)90037-5)
